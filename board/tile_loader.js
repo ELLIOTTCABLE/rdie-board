@@ -39,11 +39,11 @@ function writeMap(map) {
   var rows = map.length;
   for (var row = rows - 1; row >= 0; row--) {
     
-    var yTranslate = (-( parseFloat(rows) / 2.0 ) + parseFloat(row) + 1) * -100.0;
+    var yTranslate = -(-( parseFloat(rows) / 2.0 ) + parseFloat(row) + 1);
     var cols = map[row].length;
     for (var col = rows - 1; col >= 0; col--) {
       
-      var xTranslate = (-( parseFloat(cols) / 2.0 ) + parseFloat(col) + 1) * -100.0;
+      var xTranslate = -(-( parseFloat(cols) / 2.0 ) + parseFloat(col) + 1);
       var tiles = map[row][col].length;
       for (var tile = tiles - 1; tile >= 0; tile--) {
         // console.log(map[row][col][tile], xTranslate, yTranslate);
@@ -60,7 +60,7 @@ function addTile(id, xTranslate, yTranslate) {
   
   queueHookForTile(tileId, function(tile){
     writeSVG( unescape(tile['svg']), document.getElementById('tiles'), ['tile', tile['name']], function(attr) {
-      attr['transform'] = 'translate(' + xTranslate + ',' + yTranslate + ')';
+      attr['transform'] = 'translate(' + (xTranslate * 100) + ',' + (xTranslate * 100) + ')';
       return attr;
     } );
   });
