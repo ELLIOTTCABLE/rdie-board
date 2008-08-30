@@ -147,3 +147,8 @@ function writeSVG(svgSource, parentNode) {
   var svgNode = svgSourceToNode(svgSource);
   parentNode.appendChild( document.importNode(svgNode, true) );
 }
+
+function removeTile(x, y) {
+  var gNode = gridNode(x, y);
+  gNode.parentNode.removeChild(gNode);
+}
