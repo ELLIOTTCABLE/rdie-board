@@ -81,8 +81,8 @@ end
 
 TestMap = []
 arr = []
-25.times {arr << [2]}
-25.times {TestMap << arr}
+20.times {arr << [2]}
+20.times {TestMap << arr}
 
 class Api < Halcyon::Controller
   
