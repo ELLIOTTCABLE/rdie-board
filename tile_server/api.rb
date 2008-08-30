@@ -53,8 +53,8 @@ class Tile
   
   def initialize name, opts = {}
     @name = name
-    @css = opts[:css] || nil
-    @svg = opts[:svg] || TileBackground
+    self.css = opts[:css] || nil
+    self.svg = opts[:svg] || TileBackground
     
     yield self if block_given?
     
