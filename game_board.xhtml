@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN" "http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd">
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN' 'http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd'>
 <!-- ===================================
 	= Created by elliottcable: elliottcable.name
 	= Code (NOT CONTENT) available under Creative Commons BY-NC-SA 3.0
@@ -8,84 +8,12 @@
 	=    is released under the same license as the code if no license
 	=    is specified
 	=================================== -->
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang='en'>
-	<head profile="http://gmpg.org/xfn/11">
-		<meta http-equiv="Content-Type" content="application/xhtml+xml;charset=utf-8"/>
+<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en'>
+	<head profile='http://gmpg.org/xfn/11'>
+		<meta http-equiv='Content-Type' content='application/xhtml+xml;charset=utf-8'/>
 		<title>Game Board test file</title>
-		<link rel="copyright" href="http://creativecommons.org/licenses/by-nc-sa/3.0/" type="text/html;charset=utf-8" />
-		<!-- <link rel="stylesheet" href="http://files.elliottcable.name/SASS/compiled/mini.css" type="text/css;charset=utf-8" /> -->
-		<script type="text/javascript" src="http://yui.yahooapis.com/2.4.1/build/yuiloader/yuiloader-beta-min.js" ></script>
-		<script type="text/javascript">
-			<![CDATA[
-				var targetObject = null;
-				
-				function getSvgLoc(svgElement,theEvent){
-					// Let's work some magic! (IOW, I have no idea how this works yet)
-					var matrix = svgElement.getScreenCTM();
-					var mouseX = matrix.inverse().a*theEvent.clientX+matrix.inverse().c*theEvent.clientY+matrix.inverse().e;
-					var mouseY = matrix.inverse().b*theEvent.clientX+matrix.inverse().d*theEvent.clientY+matrix.inverse().f;
-					var mouseLoc = new Array(mouseX,mouseY);
-					return mouseLoc;
-				}
-				
-				function moveHandler(theEvent){
-					if (theEvent == null) { theEvent = window.event } 
-					if (theEvent.button <= 1 && dragOK){
-						var mouseLoc = getSvgLoc(board,theEvent)
-						
-						// viewBox[0] = mouseX - startX
-						// viewBox[1] = mouseY - startY
-						var distance = new Array(2)
-						distance[0] = mouseLoc[0] - startMouseLoc[0]
-						distance[1] = mouseLoc[1] - startMouseLoc[1]
-						
-						// console.log("mouseLoc", mouseLoc, " & distance", distance)
-						
-						viewBox[0] = startViewBox[0] - distance[0]
-						viewBox[1] = startViewBox[1] - distance[1]
-						
-						board.setAttribute('viewBox',viewBox.join(' '))
-						return false;
-					}
-				}
-
-				function cleanup(theEvent) {
-					document.onmousemove=null;
-					document.onmouseup=null;
-					board.style.cursor=orgCursor;
-					dragOK = false;
-				}
-
-				function dragHandler(theEvent){
-					if (theEvent == null) { theEvent = window.event; } 
-					var target = theEvent.target != null ? theEvent.target : theEvent.srcElement;
-					targetObject = target;
-					orgCursor = target.style.cursor;
-					
-					// I need to check if the clicked element is eventually a child of the #board object
-					parentNode = target.parentNode
-					while (parentNode) {
-						if (parentNode.id === "map") {
-							board = parentNode
-							board.style.cursor = '-moz-grabbing';
-							dragOK = true;
-							
-							startViewBox = board.getAttribute('viewBox').split(' ').map(function(str){return parseInt(str);})
-							viewBox = startViewBox
-							startMouseLoc = getSvgLoc(board,theEvent)
-							
-							document.onmousemove = moveHandler;
-							document.onmouseup = cleanup;
-							return false;
-						};
-						parentNode = parentNode.parentNode
-					}
-				}
-
-				document.onmousedown=dragHandler;
-			]]>
-		</script>
-		
+		<link rel='copyright' href='http://creativecommons.org/licenses/by-nc-sa/3.0/' type='text/html;charset=utf-8' />
+		<!-- <link rel='stylesheet' href='http://files.elliottcable.name/SASS/compiled/mini.css' type='text/css;charset=utf-8' /> -->
 		<style>
 			<![CDATA[
 				* {
@@ -115,7 +43,7 @@
 					padding-bottom: 0.1em;
 					text-align: center;
 					font-variant: small-caps;
-					font: 'Hoefler Text', serif;
+					font-family: 'Hoefler Text', serif;
 					color: #AAAAAA;
 				}
 				h1 {
@@ -154,18 +82,34 @@
 				#map:hover #axes path {
 					stroke-width: 5;
 				}
+				
+				#board #zoomer {
+/*          display: none;*/
+          visibility: hidden;
+				}
+				#board:hover #zoomer {
+/*          display: svg-g;*/
+				  visibility: visible;
+				}
+				#board #zoomer #zoomer_capsule {
+				  fill: black;
+				  fill-opacity: 0.5;
+				  stroke-width: 1.25;
+					stroke: white;
+					stroke-opacity: 0.5;
+				}
 
 				.tile {
 					stroke: #474747;
 					stroke-width: .25;
 				}
-
-				.grass .bg {
-					fill: green;
-				}
 				
 				.tile:hover .bg {
 					opacity: 0.75;
+				}
+				
+				.grass .bg {
+					fill: green;
 				}
 
 				path.trail {
@@ -183,12 +127,96 @@
 				}
 			]]>
 		</style>
+		
+    <!-- <script type='text/javascript' src='http://yui.yahooapis.com/2.4.1/build/yuiloader/yuiloader-beta-min.js'></script> -->
+		<script type='text/javascript'>
+			<![CDATA[
+				var targetObject = null;
+				
+				function getSvgLoc(svgElement,theEvent){
+					// Let's work some magic! (IOW, I have no idea how this works yet)
+					var matrix = svgElement.getScreenCTM();
+					var mouseX = matrix.inverse().a*theEvent.clientX+matrix.inverse().c*theEvent.clientY+matrix.inverse().e;
+					var mouseY = matrix.inverse().b*theEvent.clientX+matrix.inverse().d*theEvent.clientY+matrix.inverse().f;
+					var mouseLoc = new Array(mouseX,mouseY);
+					return mouseLoc;
+				}
+				
+				function moveHandler(theEvent){
+					if (theEvent == null) { theEvent = window.event } 
+					if (theEvent.button <= 1 && dragOK){
+						var mouseLoc = getSvgLoc(board,theEvent)
+						
+						// viewBox[0] = mouseX - startX
+						// viewBox[1] = mouseY - startY
+						var distance = new Array(2)
+						distance[0] = mouseLoc[0] - startMouseLoc[0]
+						distance[1] = mouseLoc[1] - startMouseLoc[1]
+						
+            console.log('mouseLoc', mouseLoc, ' & distance', distance)
+						
+						viewBox[0] = startViewBox[0] - distance[0]
+						viewBox[1] = startViewBox[1] - distance[1]
+						
+						board.setAttribute('viewBox',viewBox.join(' '))
+						return false;
+					}
+				}
+
+				function cleanup(theEvent) {
+					document.onmousemove=null;
+					document.onmouseup=null;
+					board.style.cursor=orgCursor;
+					dragOK = false;
+				}
+
+				function mouseHandler(theEvent){
+					if (theEvent == null) { theEvent = window.event; } 
+					var target = theEvent.target != null ? theEvent.target : theEvent.srcElement;
+					targetObject = target;
+					orgCursor = target.style.cursor;
+					
+        //  parentNode = target.parentNode
+        //  while (parentNode) { // fail out if we've reached the document (document.parentNode == null)
+        //    if (parentNode.id === 'map') {
+        //      board = parentNode
+        //      board.style.cursor = '-moz-grabbing';
+        //      dragOK = true;
+        //      
+        //      startViewBox = board.getAttribute('viewBox').split(' ').map(function(str){return parseInt(str);})
+        //      viewBox = startViewBox
+        //      startMouseLoc = getSvgLoc(board,theEvent)
+        //      
+        //      document.onmousemove = moveHandler;
+        //      document.onmouseup = cleanup;
+        //      return false;
+        //    };
+        //    parentNode = parentNode.parentNode
+        //  }
+        // }
+					
+					// Let's see what was clicked. If it's a tile, then we need to (for now, at least)
+					//  just drag the parent board's viewport. If it's the zoomer, we need to zoom.
+					parentNode = target.parentNode
+					while (parentNode && parentNode != document) { // fail out if we've reached the document (document.parentNode == null)
+					  if (parentNode.id === 'zoomer') {
+					    console.info('you clicked the zoomer');
+				    } else if ((klass = parentNode.getAttribute("class")) && klass.match('tile')) {
+              console.info('you clicked a tile');
+						};
+						parentNode = parentNode.parentNode
+					}
+				}
+
+				document.onmousedown=mouseHandler;
+			]]>
+		</script>
 	</head>
 	<body>
-		<div id="everything">
-			<h1>Game Board v2</h1>
-			<svg id="board" width="25em" height="25em" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-				<svg id="map" viewBox="-500 -500 1000 1000" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+		<div id='everything'>
+			<h1>Game Board v3</h1>
+			<svg id='board' width='25em' height='25em' zoomAndPan='disable' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>
+				<svg id='map' viewBox='-500 -500 1000 1000' width='100%' height='100%' zoomAndPan='disable' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>
 					<desc>game board and play map</desc>
 					<!-- Row -34 -->
 					    <g transform='translate(-3500,-3500)' class='tile grass'><!-- -34,-34 -->
@@ -15035,16 +15063,21 @@
 						<path id='x' d='M -3500,0 L 3500,0'/><path id='y' d='M 0,-3500 L 0,3500'/>
 					</g>
 				</svg>
-				<rect id='board_border' x='2.5%' y='2.5%' rx='30' ry='30' width='95%' height='95%'/>
+				<rect id='board_border' x='2.5%' y='2.5%' rx='30' ry='30' width='95%' height='95%' clip-path='url(#zoomer_clip)'/>
 				<rect id='board_corners' x='-2.5%' y='-2.5%' rx='50' ry='50' width='105%' height='105%'/>
+				
+				<g id='zoomer' style="visibility: visible;">
+          <rect id='zoomer_capsule' x='10%' y='5%' rx='1.5%' ry='100%' width='80%' height='2.5%'/>
+          <rect id='zoomer_handle' x='40%' y='5%' width='20%' height='2.5%' style='fill: white; fill-opacity: 0.75;'/>
+			  </g>
+			  
 			</svg>
-			<div id="footer">
+			<div id='footer'>
 				<h2>To-Do</h2>
 				<ul>
-					<li>zoom controls</li>
 					<li>drag-and-drop editing</li>
 					<li>click interaction/tile information</li>
-					<li>AJAX loading and un-loading (to be able to reliably load and render maps larger than the current soft maximum of 70x70 tiles)</li>
+					<li>un-loading and XHR loading (to be able to reliably load and render maps larger than the current soft maximum of 70x70 tiles)</li>
 				</ul>
 			</div>
 		</div>
