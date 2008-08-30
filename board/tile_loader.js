@@ -55,15 +55,13 @@ function writeMap(map) {
 
 // Adds a new tile to the grid. Gets the tile from the server, and prints
 // anything necessary to display it to the page.
-function addTile(id, xTranslate, yTranslate) {
+function addTile(id, x, y) {
   var tileId = parseInt(id)
   
   queueHookForTile(tileId, function(tile){
-    writeSVG( unescape(tile['svg']), document.getElementById('tiles'), ['tile', tile['name']], function(attr) {
-      attr['transform'] = 'translate(' + (xTranslate * 100) + ',' + (yTranslate * 100) + ')';
-      attr['id'] = 'tile:' + xTranslate + '.' + yTranslate;
-      return attr;
-    } );
+    gNode = gridNode(x, y);
+    addSVGClass(gNode, tile['name']);
+    writeSVG( unescape(tile['svg']), gNode );
   });
 }
 
@@ -122,6 +120,22 @@ function retrieveTile(id, onRetrieve) {
   });
 }
 
+// Returns the <g> object representing one 'grid tile', so actual graphical
+// tiles can be added to it.
+function gridNode(x, y) {
+  var gNode = document.getElementById('tile:' + x + '.' + y);
+  if(!gNode) {
+    gNode = document.importNode( document.createElementNS(SVG_NS, 'g'), true );
+    addSVGClass(gNode, 'tile');
+    gNode.setAttributeNS(null, 'transform', 'translate('+(x * 100)+','+(y * 100)+')');
+    gNode.setAttributeNS(null, 'id', 'tile:'+x+'.'+y);
+    
+    document.getElementById('tiles').appendChild(gNode)
+  }
+  
+  return gNode;
+}
+
 function writeCSS(cssSource) {
   var styleNode = document.createElement('style');
   // var innerCSS = document.createTextNodeNs(SVG_NS, cssSource); // WTF? Why not the Ns version?
@@ -131,20 +145,8 @@ function writeCSS(cssSource) {
   (document.getElementsByTagName('head')[0] || document.documentElement).appendChild(styleNode);
 }
 
-// importNode the parentNode to the document before running this!
-function writeSVG(svgSource, parentNode, classes, attributesFunction) {
-  var groupNode = document.createElementNS(SVG_NS, 'g');
-  for (var klass = classes.length - 1; klass >= 0; klass--) {
-    addSVGClass(groupNode, classes[klass])
-  };
-  
-  if(attributesFunction != 'undefined') {
-    var attributes = attributesFunction(new Array());
-    for(var attribute in attributes) {
-      groupNode.setAttributeNS(null, attribute, attributes[attribute]);
-    };
-  }
-  parentNode.appendChild(groupNode);
-  
-  groupNode.appendChild( document.importNode(svgSourceToNode(svgSource), true) );
+function writeSVG(svgSource, parentNode) {
+  console.in
+  svgNode = svgSourceToNode(svgSource);
+  parentNode.appendChild( document.importNode(svgNode, true) );
 }
