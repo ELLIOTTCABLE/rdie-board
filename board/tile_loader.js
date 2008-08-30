@@ -133,18 +133,18 @@ function writeCSS(cssSource) {
 
 // importNode the parentNode to the document before running this!
 function writeSVG(svgSource, parentNode, classes, attributesFunction) {
-  var svgNode = document.createElementNS(SVG_NS, 'g');
+  var groupNode = document.createElementNS(SVG_NS, 'g');
   for (var klass = classes.length - 1; klass >= 0; klass--) {
-    addSVGClass(svgNode, classes[klass])
+    addSVGClass(groupNode, classes[klass])
   };
   
   if(attributesFunction != 'undefined') {
     var attributes = attributesFunction(new Array());
     for(var attribute in attributes) {
-      svgNode.setAttributeNS(null, attribute, attributes[attribute]);
+      groupNode.setAttributeNS(null, attribute, attributes[attribute]);
     };
   }
-  parentNode.appendChild(svgNode);
+  parentNode.appendChild(groupNode);
   
-  svgNode.appendChild( document.importNode(svgSourceToNode(svgSource), true) );
+  groupNode.appendChild( document.importNode(svgSourceToNode(svgSource), true) );
 }
