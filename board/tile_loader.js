@@ -8,10 +8,8 @@ function JSONHttpRequest(URI, onResponse, method_opt, charset_opt) {
   request.setRequestHeader("Content-Type", "application/json;charset=" + charset);
   
   request.onreadystatechange = function() {
-    if (request.readyState == 4 && request.status == 200) {
-      if (request.responseText) {
-        onResponse( (JSON.parse(request.responseText))['body'] );
-      }
+    if (request.readyState == 4 && request.status == 200 && request.responseText) {
+      onResponse( (JSON.parse(request.responseText))['body'] );
     }
   }
   
