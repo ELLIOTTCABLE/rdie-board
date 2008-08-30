@@ -72,6 +72,7 @@ function addTile(id, xTranslate, yTranslate){
 // to retrieveTile() documenting how you want to deal with the tile.
 var cachedTiles = new Array();
 function retrieveTile(id, onRetrieve){
+  var cachedTile = cachedTiles[ parseInt(id) ]
   if(cachedTile == 'undefined' || cachedTile == null){
     
     // If we haven't been grabbed before, we need to add the tile to
