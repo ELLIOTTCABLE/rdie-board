@@ -57,7 +57,7 @@ function addTile(id, x, y) {
   var tileId = parseInt(id)
   
   queueHookForTile(tileId, function(tile){
-    gNode = gridNode(x, y);
+    var gNode = gridNode(x, y);
     addSVGClass(gNode, tile['name']);
     writeSVG( unescape(tile['svg']), gNode );
   });
@@ -144,7 +144,6 @@ function writeCSS(cssSource) {
 }
 
 function writeSVG(svgSource, parentNode) {
-  console.in
-  svgNode = svgSourceToNode(svgSource);
+  var svgNode = svgSourceToNode(svgSource);
   parentNode.appendChild( document.importNode(svgNode, true) );
 }
