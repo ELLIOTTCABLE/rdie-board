@@ -75,11 +75,14 @@ Tile.new :null # Tile of ID 0 should always be an empty tile named 'null'
 Tile.new :test do |tile|
   tile.css = ".background { fill: #00CC00; }"
 end
+Tile.new :grass do |tile|
+  tile.css = ".background { fill: #009900; }"
+end
 
-EmptyMap = []
+TestMap = []
 arr = []
-6.times {arr << [1]}
-6.times {EmptyMap << arr}
+10.times {arr << [2]}
+10.times {TestMap << arr}
 
 class Api < Halcyon::Controller
   
@@ -96,7 +99,7 @@ class Api < Halcyon::Controller
   # is just an array of tiles that are 'stacked', i.e., rendered in the same
   # position (given by the position in the two parent arrays)
   def map
-    ok EmptyMap
+    ok TestMap
   end
   
 end
