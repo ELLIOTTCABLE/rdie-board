@@ -1,0 +1,3 @@
+To start:
+
+    thin start --rackup='runner.ru' --port=4647
