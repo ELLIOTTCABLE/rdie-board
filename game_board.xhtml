@@ -34,7 +34,7 @@
 				 	vertical-align: middle;
 				}
 				#everything {
-					width: 25em;
+					width: 50em;
 					display: table-cell;
 					vertical-align: middle;
 				}
@@ -98,6 +98,10 @@
 					stroke: white;
 					stroke-opacity: 0.5;
 				}
+				#board #zoomer #zoomer_handle {
+				  fill: white;
+				  fill-opacity: 0.75;
+				}
 
 				.tile {
 					stroke: #474747;
@@ -108,14 +112,42 @@
 					opacity: 0.75;
 				}
 				
+				.player {
+				  fill: #FFFF00;
+				}
+				.player:hover {
+				  stroke: #FFFF00;
+				  stroke-width: 50;
+				}
+				
 				.grass .bg {
-					fill: green;
+					fill: #009900;
+				}
+				
+				.moss .bg {
+					fill: #009933;
+				}
+				
+				.deadgrass .bg {
+					fill: #4A6633;
+				}
+				
+				.forest .bg {
+					fill: #115500;
+				}
+				
+				.water .bg {
+					fill: #339999;
+				}
+				
+				.dirtywater .bg {
+					fill: #338866;
 				}
 
 				path.trail {
 					fill: none;
-					stroke: #993300;
-					stroke-width: 25;
+					stroke: #665033;
+					stroke-width: 50;
 				}
 				
 				#footer ul li {
@@ -141,82 +173,165 @@
 					var mouseLoc = new Array(mouseX,mouseY);
 					return mouseLoc;
 				}
-				
-				function moveHandler(theEvent){
-					if (theEvent == null) { theEvent = window.event } 
-					if (theEvent.button <= 1 && dragOK){
-						var mouseLoc = getSvgLoc(board,theEvent)
-						
-						// viewBox[0] = mouseX - startX
-						// viewBox[1] = mouseY - startY
-						var distance = new Array(2)
-						distance[0] = mouseLoc[0] - startMouseLoc[0]
-						distance[1] = mouseLoc[1] - startMouseLoc[1]
-						
-            console.log('mouseLoc', mouseLoc, ' & distance', distance)
-						
-						viewBox[0] = startViewBox[0] - distance[0]
-						viewBox[1] = startViewBox[1] - distance[1]
-						
-						board.setAttribute('viewBox',viewBox.join(' '))
-						return false;
-					}
-				}
-
-				function cleanup(theEvent) {
-					document.onmousemove=null;
-					document.onmouseup=null;
-					board.style.cursor=orgCursor;
-					dragOK = false;
-				}
 
 				function mouseHandler(theEvent){
 					if (theEvent == null) { theEvent = window.event; } 
 					var target = theEvent.target != null ? theEvent.target : theEvent.srcElement;
 					targetObject = target;
-					orgCursor = target.style.cursor;
-					
-        //  parentNode = target.parentNode
-        //  while (parentNode) { // fail out if we've reached the document (document.parentNode == null)
-        //    if (parentNode.id === 'map') {
-        //      board = parentNode
-        //      board.style.cursor = '-moz-grabbing';
-        //      dragOK = true;
-        //      
-        //      startViewBox = board.getAttribute('viewBox').split(' ').map(function(str){return parseInt(str);})
-        //      viewBox = startViewBox
-        //      startMouseLoc = getSvgLoc(board,theEvent)
-        //      
-        //      document.onmousemove = moveHandler;
-        //      document.onmouseup = cleanup;
-        //      return false;
-        //    };
-        //    parentNode = parentNode.parentNode
-        //  }
-        // }
 					
 					// Let's see what was clicked. If it's a tile, then we need to (for now, at least)
 					//  just drag the parent board's viewport. If it's the zoomer, we need to zoom.
-					parentNode = target.parentNode
-					while (parentNode && parentNode != document) { // fail out if we've reached the document (document.parentNode == null)
-					  if (parentNode.id === 'zoomer') {
-					    console.info('you clicked the zoomer');
-				    } else if ((klass = parentNode.getAttribute("class")) && klass.match('tile')) {
-              console.info('you clicked a tile');
-						};
-						parentNode = parentNode.parentNode
+          //parentNode = target.parentNode
+          parentNode = target;
+					while (parentNode) { // fail out if we've reached the document (document.parentNode == null)
+					  if (parentNode != document) { // Deal with the zoomer
+					    
+					    
+					    var klass = parentNode.getAttribute("class")
+  					  if (parentNode.id === 'zoomer') {
+  					    console.info('you clicked the zoomer! You win one hundered pesos.');
+  					    map = document.getElementById('map')
+  					    board = document.getElementById('board')
+  					    handle = document.getElementById('zoomer_handle')
+  					    
+  					    mapZoomOK = true;
+  					    mapStartViewBox = map.getAttribute('viewBox').split(' ').map(function(str){return parseInt(str);});
+  					    // WHY DO I HAVE TO DO THIS!!!!!!!!!!!?!?!?!?
+  					    mapViewBox = new Array(4);
+  					    mapViewBox = mapStartViewBox.join(' ');
+  					    mapViewBox = mapViewBox.split(' ').map(function(str){return parseInt(str);});
+  					    mapZoomerStartMouseLoc = getSvgLoc(board,theEvent);
+  					    
+  					    mapZoomerStartWidth = parseInt(handle.getAttribute('width'));
+  					    
+  					    document.onmousemove = mapZoomMouseMoveHandler;
+                document.onmouseup = mouseCleanupHandler;
+  					  
+  					  
+  				    } else if ((klass) && klass.match('tile')) { // Deal with the dragging
+  				      console.info('you clicked a tile');
+                map = document.getElementById('map');
+                mapDragOK = true;
+            
+                mapStartViewBox = map.getAttribute('viewBox').split(' ').map(function(str){return parseInt(str);});
+                // WHY DO I HAVE TO DO THIS!!!!!!!!!!!?!?!?!?
+  					    mapViewBox = mapStartViewBox;
+                mapDragStartMouseLoc = getSvgLoc(map,theEvent);
+            
+                document.onmousemove = mapDragMouseMoveHandler;
+                document.onmouseup = mouseCleanupHandler;
+                
+  						} // if/else if
+  						parentNode = parentNode.parentNode;
+  					} else {
+  					  parentNode = null;
+  					}; // if parentNode != document
+					}; // while
+				}; // function mouseHandler
+				
+				function mapZoomMouseMoveHandler(theEvent){
+				  console.log('zooming')
+					if (theEvent == null) { theEvent = window.event }; 
+					if (theEvent.button <= 1 && mapZoomOK){
+						var mapZoomerMouseLoc = getSvgLoc(board,theEvent)
+						
+						// mapZoomerMoveDistance = mouseX - startX
+						var mapZoomerAbsoluteMoveDistance = mapZoomerMouseLoc[0] - mapZoomerStartMouseLoc[0]
+						mapZoomerDistance = Math.abs((mapZoomerMouseLoc[0] / 4) - 50)
+						
+						mapZoomerStartWidth
+						mapZoomerStartDistance = mapZoomerStartWidth / 2
+						mapZoomerDistanceDelta = mapZoomerDistance - mapZoomerStartDistance
+						
+						mapZoomerPercentDelta = (100 - mapZoomerDistanceDelta) / 100
+						mapStartVisibleTiles = mapStartViewBox[2] / 100
+						mapStartPercentageOverSlide = mapStartVisibleTiles / 10
+						
+						
+						if (mapZoomerDistance > 5 && mapZoomerDistance < 38) {
+						  handle.setAttribute('x', (50 - mapZoomerDistance) + '%')
+  						handle.setAttribute('width', (mapZoomerDistance * 2) + '%')
+  						
+              // mapViewBox = mapStartViewBox
+              // WHY DOES THIS NOT ALIGN TO THE TILES!!!!!1!!1!!!?!?
+              mapViewBox[2] = mapStartViewBox[2] * mapZoomerPercentDelta // X width
+              mapViewBox[3] = mapViewBox[2] // Y width
+              mapViewBox[0] = mapStartViewBox[0] + (mapStartViewBox[2] - mapViewBox[2]) / 2 // X start
+              mapViewBox[1] = mapStartViewBox[1] + (mapStartViewBox[2] - mapViewBox[2]) / 2 // Y start
+              
+              map.setAttribute('viewBox',mapViewBox.join(' '))
+  					}
+  					console.log(((100 - mapZoomerDistanceDelta) / 100), mapViewBox)
+						
+            // mapViewBox[0] = mapStartViewBox[0] - mapZoomerMoveDistance[0]
+            // mapViewBox[1] = mapStartViewBox[1] - mapZoomerMoveDistance[1]
+						
+            // map.setAttribute('viewBox',mapViewBox.join(' '))
+						return false;
 					}
 				}
+				
+				function mapDragMouseMoveHandler(theEvent){
+				  console.log('dragging')
+					if (theEvent == null) { theEvent = window.event } 
+					if (theEvent.button <= 1 && mapDragOK){
+						var mapDragMouseLoc = getSvgLoc(map,theEvent)
+						
+						// viewBox[0] = mouseX - startX
+						// viewBox[1] = mouseY - startY
+						var mapDragDistance = new Array(2)
+						mapDragDistance[0] = mapDragMouseLoc[0] - mapDragStartMouseLoc[0]
+						mapDragDistance[1] = mapDragMouseLoc[1] - mapDragStartMouseLoc[1]
+						
+						mapViewBox[0] = mapStartViewBox[0] - mapDragDistance[0]
+						mapViewBox[1] = mapStartViewBox[1] - mapDragDistance[1]
+						
+						map.setAttribute('viewBox',mapViewBox.join(' '))
+						return false;
+					}
+				}
+				
+        function deubgMoseMoveHandler(theEvent) {
+          if (theEvent == null) { theEvent = window.event }
+          var parentNode = theEvent.target // not setting to parentNode yet, we want to test actual target too
+          while (parentNode) { // fail out if we've reached the document (document.parentNode == null)
+            if (parentNode != document) {
+              var klass = parentNode.getAttribute("class")
+              if ((klass) && klass.match('tile')) {
+                position = parentNode.getAttribute("transform")
+                if (pastPosition != position) {
+                  console.log(position)
+                }
+                pastPosition = position
+              }
+            }
+            parentNode = parentNode.parentNode
+          } // while parentNode
+        } // function deubgMoseMoveHandler
 
+				function mouseCleanupHandler(theEvent) {
+          if (debug) {
+            document.onmousemove=deubgMoseMoveHandler;
+          } else {
+				    document.onmousemove=null;
+          }
+					document.onmouseup=null;
+					mapDragOK = false;
+					mapZoomOK = false;
+				}
+
+        debug = true;
+        pastPosition = null;
 				document.onmousedown=mouseHandler;
+        mouseCleanupHandler(null);
 			]]>
 		</script>
 	</head>
 	<body>
 		<div id='everything'>
 			<h1>Game Board v3</h1>
-			<svg id='board' width='25em' height='25em' zoomAndPan='disable' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>
-				<svg id='map' viewBox='-500 -500 1000 1000' width='100%' height='100%' zoomAndPan='disable' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>
+			<svg id='board' viewBox='0 0 400 400' width='50em' height='50em' zoomAndPan='disable' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>
+				<svg id='map' viewBox='-1000 -1000 2000 2000' width='100%' height='100%' zoomAndPan='disable' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>
 					<desc>game board and play map</desc>
 					<!-- Row -34 -->
 					    <g transform='translate(-3500,-3500)' class='tile grass'><!-- -34,-34 -->
@@ -4564,52 +4679,53 @@
 					    <g transform='translate(-100,-1500)' class='tile grass'><!-- -14,0 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(0,-1500)' class='tile grass'><!-- -14,1 -->
+					    <g transform='translate(0,-1500)' class='tile forest'><!-- -14,1 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(100,-1500)' class='tile grass'><!-- -14,2 -->
+					    <g transform='translate(100,-1500)' class='tile forest'><!-- -14,2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(200,-1500)' class='tile grass'><!-- -14,3 -->
+					    <g transform='translate(200,-1500)' class='tile forest'><!-- -14,3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(300,-1500)' class='tile grass'><!-- -14,4 -->
+					    <g transform='translate(300,-1500)' class='tile forest'><!-- -14,4 -->
+					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 50,0 L 50,100'/>
+					    </g>
+					    <g transform='translate(400,-1500)' class='tile forest'><!-- -14,5 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(400,-1500)' class='tile grass'><!-- -14,5 -->
+					    <g transform='translate(500,-1500)' class='tile forest'><!-- -14,6 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(500,-1500)' class='tile grass'><!-- -14,6 -->
+					    <g transform='translate(600,-1500)' class='tile forest'><!-- -14,7 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(600,-1500)' class='tile grass'><!-- -14,7 -->
+					    <g transform='translate(700,-1500)' class='tile forest'><!-- -14,8 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(700,-1500)' class='tile grass'><!-- -14,8 -->
+					    <g transform='translate(800,-1500)' class='tile forest'><!-- -14,9 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(800,-1500)' class='tile grass'><!-- -14,9 -->
+					    <g transform='translate(900,-1500)' class='tile forest'><!-- -14,10 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(900,-1500)' class='tile grass'><!-- -14,10 -->
+					    <g transform='translate(1000,-1500)' class='tile forest'><!-- -14,11 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1000,-1500)' class='tile grass'><!-- -14,11 -->
+					    <g transform='translate(1100,-1500)' class='tile forest'><!-- -14,12 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1100,-1500)' class='tile grass'><!-- -14,12 -->
+					    <g transform='translate(1200,-1500)' class='tile forest'><!-- -14,13 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1200,-1500)' class='tile grass'><!-- -14,13 -->
+					    <g transform='translate(1300,-1500)' class='tile forest'><!-- -14,14 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1300,-1500)' class='tile grass'><!-- -14,14 -->
+					    <g transform='translate(1400,-1500)' class='tile forest'><!-- -14,15 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1400,-1500)' class='tile grass'><!-- -14,15 -->
-					      <rect x='0' y='0' width='100' height='100' class='bg'/>
-					    </g>
-					    <g transform='translate(1500,-1500)' class='tile grass'><!-- -14,16 -->
+					    <g transform='translate(1500,-1500)' class='tile forest'><!-- -14,16 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(1600,-1500)' class='tile grass'><!-- -14,17 -->
@@ -4773,55 +4889,56 @@
 					    <g transform='translate(-200,-1400)' class='tile grass'><!-- -13,-1 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-100,-1400)' class='tile grass'><!-- -13,0 -->
+					    <g transform='translate(-100,-1400)' class='tile forest'><!-- -13,0 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(0,-1400)' class='tile grass'><!-- -13,1 -->
+					    <g transform='translate(0,-1400)' class='tile forest'><!-- -13,1 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(100,-1400)' class='tile grass'><!-- -13,2 -->
+					    <g transform='translate(100,-1400)' class='tile forest'><!-- -13,2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(200,-1400)' class='tile grass'><!-- -13,3 -->
+					    <g transform='translate(200,-1400)' class='tile forest'><!-- -13,3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(300,-1400)' class='tile grass'><!-- -13,4 -->
+					    <g transform='translate(300,-1400)' class='tile forest'><!-- -13,4 -->
+					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 50,0 L 50,100'/>
+					    </g>
+					    <g transform='translate(400,-1400)' class='tile forest'><!-- -13,5 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(400,-1400)' class='tile grass'><!-- -13,5 -->
+					    <g transform='translate(500,-1400)' class='tile forest'><!-- -13,6 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(500,-1400)' class='tile grass'><!-- -13,6 -->
+					    <g transform='translate(600,-1400)' class='tile forest'><!-- -13,7 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(600,-1400)' class='tile grass'><!-- -13,7 -->
+					    <g transform='translate(700,-1400)' class='tile forest'><!-- -13,8 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(700,-1400)' class='tile grass'><!-- -13,8 -->
+					    <g transform='translate(800,-1400)' class='tile forest'><!-- -13,9 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(800,-1400)' class='tile grass'><!-- -13,9 -->
+					    <g transform='translate(900,-1400)' class='tile forest'><!-- -13,10 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(900,-1400)' class='tile grass'><!-- -13,10 -->
+					    <g transform='translate(1000,-1400)' class='tile forest'><!-- -13,11 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1000,-1400)' class='tile grass'><!-- -13,11 -->
+					    <g transform='translate(1100,-1400)' class='tile forest'><!-- -13,12 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1100,-1400)' class='tile grass'><!-- -13,12 -->
+					    <g transform='translate(1200,-1400)' class='tile forest'><!-- -13,13 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1200,-1400)' class='tile grass'><!-- -13,13 -->
+					    <g transform='translate(1300,-1400)' class='tile forest'><!-- -13,14 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1300,-1400)' class='tile grass'><!-- -13,14 -->
+					    <g transform='translate(1400,-1400)' class='tile forest'><!-- -13,15 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1400,-1400)' class='tile grass'><!-- -13,15 -->
-					      <rect x='0' y='0' width='100' height='100' class='bg'/>
-					    </g>
-					    <g transform='translate(1500,-1400)' class='tile grass'><!-- -13,16 -->
+					    <g transform='translate(1500,-1400)' class='tile forest'><!-- -13,16 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(1600,-1400)' class='tile grass'><!-- -13,17 -->
@@ -4991,49 +5108,50 @@
 					    <g transform='translate(0,-1300)' class='tile grass'><!-- -12,1 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(100,-1300)' class='tile grass'><!-- -12,2 -->
+					    <g transform='translate(100,-1300)' class='tile forest'><!-- -12,2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(200,-1300)' class='tile grass'><!-- -12,3 -->
+					    <g transform='translate(200,-1300)' class='tile forest'><!-- -12,3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(300,-1300)' class='tile grass'><!-- -12,4 -->
+					    <g transform='translate(300,-1300)' class='tile forest'><!-- -12,4 -->
+					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 50,0 L 50,100'/>
+					    </g>
+					    <g transform='translate(400,-1300)' class='tile forest'><!-- -12,5 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(400,-1300)' class='tile grass'><!-- -12,5 -->
+					    <g transform='translate(500,-1300)' class='tile forest'><!-- -12,6 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(500,-1300)' class='tile grass'><!-- -12,6 -->
+					    <g transform='translate(600,-1300)' class='tile forest'><!-- -12,7 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(600,-1300)' class='tile grass'><!-- -12,7 -->
+					    <g transform='translate(700,-1300)' class='tile forest'><!-- -12,8 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(700,-1300)' class='tile grass'><!-- -12,8 -->
+					    <g transform='translate(800,-1300)' class='tile forest'><!-- -12,9 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(800,-1300)' class='tile grass'><!-- -12,9 -->
+					    <g transform='translate(900,-1300)' class='tile forest'><!-- -12,10 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(900,-1300)' class='tile grass'><!-- -12,10 -->
+					    <g transform='translate(1000,-1300)' class='tile forest'><!-- -12,11 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1000,-1300)' class='tile grass'><!-- -12,11 -->
+					    <g transform='translate(1100,-1300)' class='tile forest'><!-- -12,12 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1100,-1300)' class='tile grass'><!-- -12,12 -->
+					    <g transform='translate(1200,-1300)' class='tile forest'><!-- -12,13 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1200,-1300)' class='tile grass'><!-- -12,13 -->
+					    <g transform='translate(1300,-1300)' class='tile forest'><!-- -12,14 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1300,-1300)' class='tile grass'><!-- -12,14 -->
+					    <g transform='translate(1400,-1300)' class='tile forest'><!-- -12,15 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1400,-1300)' class='tile grass'><!-- -12,15 -->
-					      <rect x='0' y='0' width='100' height='100' class='bg'/>
-					    </g>
-					    <g transform='translate(1500,-1300)' class='tile grass'><!-- -12,16 -->
+					    <g transform='translate(1500,-1300)' class='tile forest'><!-- -12,16 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(1600,-1300)' class='tile grass'><!-- -12,17 -->
@@ -5206,43 +5324,44 @@
 					    <g transform='translate(100,-1200)' class='tile grass'><!-- -11,2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(200,-1200)' class='tile grass'><!-- -11,3 -->
+					    <g transform='translate(200,-1200)' class='tile forest'><!-- -11,3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(300,-1200)' class='tile grass'><!-- -11,4 -->
+					    <g transform='translate(300,-1200)' class='tile forest'><!-- -11,4 -->
+					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 50,0 L 50,100'/>
+					    </g>
+					    <g transform='translate(400,-1200)' class='tile forest'><!-- -11,5 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(400,-1200)' class='tile grass'><!-- -11,5 -->
+					    <g transform='translate(500,-1200)' class='tile forest'><!-- -11,6 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(500,-1200)' class='tile grass'><!-- -11,6 -->
+					    <g transform='translate(600,-1200)' class='tile forest'><!-- -11,7 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(600,-1200)' class='tile grass'><!-- -11,7 -->
+					    <g transform='translate(700,-1200)' class='tile forest'><!-- -11,8 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(700,-1200)' class='tile grass'><!-- -11,8 -->
+					    <g transform='translate(800,-1200)' class='tile forest'><!-- -11,9 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(800,-1200)' class='tile grass'><!-- -11,9 -->
+					    <g transform='translate(900,-1200)' class='tile forest'><!-- -11,10 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(900,-1200)' class='tile grass'><!-- -11,10 -->
+					    <g transform='translate(1000,-1200)' class='tile forest'><!-- -11,11 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1000,-1200)' class='tile grass'><!-- -11,11 -->
+					    <g transform='translate(1100,-1200)' class='tile forest'><!-- -11,12 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1100,-1200)' class='tile grass'><!-- -11,12 -->
+					    <g transform='translate(1200,-1200)' class='tile forest'><!-- -11,13 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1200,-1200)' class='tile grass'><!-- -11,13 -->
+					    <g transform='translate(1300,-1200)' class='tile forest'><!-- -11,14 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1300,-1200)' class='tile grass'><!-- -11,14 -->
-					      <rect x='0' y='0' width='100' height='100' class='bg'/>
-					    </g>
-					    <g transform='translate(1400,-1200)' class='tile grass'><!-- -11,15 -->
+					    <g transform='translate(1400,-1200)' class='tile forest'><!-- -11,15 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(1500,-1200)' class='tile grass'><!-- -11,16 -->
@@ -5421,40 +5540,41 @@
 					    <g transform='translate(200,-1100)' class='tile grass'><!-- -10,3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(300,-1100)' class='tile grass'><!-- -10,4 -->
+					    <g transform='translate(300,-1100)' class='tile forest'><!-- -10,4 -->
+					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 50,0 L 50,100'/>
+					    </g>
+					    <g transform='translate(400,-1100)' class='tile forest'><!-- -10,5 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(400,-1100)' class='tile grass'><!-- -10,5 -->
+					    <g transform='translate(500,-1100)' class='tile forest'><!-- -10,6 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(500,-1100)' class='tile grass'><!-- -10,6 -->
+					    <g transform='translate(600,-1100)' class='tile forest'><!-- -10,7 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(600,-1100)' class='tile grass'><!-- -10,7 -->
+					    <g transform='translate(700,-1100)' class='tile forest'><!-- -10,8 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(700,-1100)' class='tile grass'><!-- -10,8 -->
+					    <g transform='translate(800,-1100)' class='tile forest'><!-- -10,9 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(800,-1100)' class='tile grass'><!-- -10,9 -->
+					    <g transform='translate(900,-1100)' class='tile forest'><!-- -10,10 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(900,-1100)' class='tile grass'><!-- -10,10 -->
+					    <g transform='translate(1000,-1100)' class='tile forest'><!-- -10,11 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1000,-1100)' class='tile grass'><!-- -10,11 -->
+					    <g transform='translate(1100,-1100)' class='tile forest'><!-- -10,12 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1100,-1100)' class='tile grass'><!-- -10,12 -->
+					    <g transform='translate(1200,-1100)' class='tile forest'><!-- -10,13 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1200,-1100)' class='tile grass'><!-- -10,13 -->
+					    <g transform='translate(1300,-1100)' class='tile forest'><!-- -10,14 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1300,-1100)' class='tile grass'><!-- -10,14 -->
-					      <rect x='0' y='0' width='100' height='100' class='bg'/>
-					    </g>
-					    <g transform='translate(1400,-1100)' class='tile grass'><!-- -10,15 -->
+					    <g transform='translate(1400,-1100)' class='tile forest'><!-- -10,15 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(1500,-1100)' class='tile grass'><!-- -10,16 -->
@@ -5627,46 +5747,47 @@
 					    <g transform='translate(0,-1000)' class='tile grass'><!-- -9,1 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(100,-1000)' class='tile grass'><!-- -9,2 -->
+					    <g transform='translate(100,-1000)' class='tile forest'><!-- -9,2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(200,-1000)' class='tile grass'><!-- -9,3 -->
+					    <g transform='translate(200,-1000)' class='tile forest'><!-- -9,3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(300,-1000)' class='tile grass'><!-- -9,4 -->
+					    <g transform='translate(300,-1000)' class='tile forest'><!-- -9,4 -->
+					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 50,0 L 50,100'/>
+					    </g>
+					    <g transform='translate(400,-1000)' class='tile forest'><!-- -9,5 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(400,-1000)' class='tile grass'><!-- -9,5 -->
+					    <g transform='translate(500,-1000)' class='tile forest'><!-- -9,6 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(500,-1000)' class='tile grass'><!-- -9,6 -->
+					    <g transform='translate(600,-1000)' class='tile forest'><!-- -9,7 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(600,-1000)' class='tile grass'><!-- -9,7 -->
+					    <g transform='translate(700,-1000)' class='tile forest'><!-- -9,8 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(700,-1000)' class='tile grass'><!-- -9,8 -->
+					    <g transform='translate(800,-1000)' class='tile forest'><!-- -9,9 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(800,-1000)' class='tile grass'><!-- -9,9 -->
+					    <g transform='translate(900,-1000)' class='tile forest'><!-- -9,10 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(900,-1000)' class='tile grass'><!-- -9,10 -->
+					    <g transform='translate(1000,-1000)' class='tile forest'><!-- -9,11 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1000,-1000)' class='tile grass'><!-- -9,11 -->
+					    <g transform='translate(1100,-1000)' class='tile forest'><!-- -9,12 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1100,-1000)' class='tile grass'><!-- -9,12 -->
+					    <g transform='translate(1200,-1000)' class='tile forest'><!-- -9,13 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1200,-1000)' class='tile grass'><!-- -9,13 -->
+					    <g transform='translate(1300,-1000)' class='tile forest'><!-- -9,14 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1300,-1000)' class='tile grass'><!-- -9,14 -->
-					      <rect x='0' y='0' width='100' height='100' class='bg'/>
-					    </g>
-					    <g transform='translate(1400,-1000)' class='tile grass'><!-- -9,15 -->
+					    <g transform='translate(1400,-1000)' class='tile forest'><!-- -9,15 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(1500,-1000)' class='tile grass'><!-- -9,16 -->
@@ -5842,43 +5963,44 @@
 					    <g transform='translate(100,-900)' class='tile grass'><!-- -8,2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(200,-900)' class='tile grass'><!-- -8,3 -->
+					    <g transform='translate(200,-900)' class='tile forest'><!-- -8,3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(300,-900)' class='tile grass'><!-- -8,4 -->
+					    <g transform='translate(300,-900)' class='tile forest'><!-- -8,4 -->
+					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 50,0 L 50,100'/>
+					    </g>
+					    <g transform='translate(400,-900)' class='tile forest'><!-- -8,5 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(400,-900)' class='tile grass'><!-- -8,5 -->
+					    <g transform='translate(500,-900)' class='tile forest'><!-- -8,6 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(500,-900)' class='tile grass'><!-- -8,6 -->
+					    <g transform='translate(600,-900)' class='tile forest'><!-- -8,7 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(600,-900)' class='tile grass'><!-- -8,7 -->
+					    <g transform='translate(700,-900)' class='tile forest'><!-- -8,8 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(700,-900)' class='tile grass'><!-- -8,8 -->
+					    <g transform='translate(800,-900)' class='tile forest'><!-- -8,9 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(800,-900)' class='tile grass'><!-- -8,9 -->
+					    <g transform='translate(900,-900)' class='tile forest'><!-- -8,10 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(900,-900)' class='tile grass'><!-- -8,10 -->
+					    <g transform='translate(1000,-900)' class='tile forest'><!-- -8,11 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1000,-900)' class='tile grass'><!-- -8,11 -->
+					    <g transform='translate(1100,-900)' class='tile forest'><!-- -8,12 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1100,-900)' class='tile grass'><!-- -8,12 -->
+					    <g transform='translate(1200,-900)' class='tile forest'><!-- -8,13 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1200,-900)' class='tile grass'><!-- -8,13 -->
+					    <g transform='translate(1300,-900)' class='tile forest'><!-- -8,14 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1300,-900)' class='tile grass'><!-- -8,14 -->
-					      <rect x='0' y='0' width='100' height='100' class='bg'/>
-					    </g>
-					    <g transform='translate(1400,-900)' class='tile grass'><!-- -8,15 -->
+					    <g transform='translate(1400,-900)' class='tile forest'><!-- -8,15 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(1500,-900)' class='tile grass'><!-- -8,16 -->
@@ -6054,43 +6176,44 @@
 					    <g transform='translate(100,-800)' class='tile grass'><!-- -7,2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(200,-800)' class='tile grass'><!-- -7,3 -->
+					    <g transform='translate(200,-800)' class='tile forest'><!-- -7,3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(300,-800)' class='tile grass'><!-- -7,4 -->
+					    <g transform='translate(300,-800)' class='tile forest'><!-- -7,4 -->
+					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 50,0 L 50,100'/>
+					    </g>
+					    <g transform='translate(400,-800)' class='tile forest'><!-- -7,5 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(400,-800)' class='tile grass'><!-- -7,5 -->
+					    <g transform='translate(500,-800)' class='tile forest'><!-- -7,6 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(500,-800)' class='tile grass'><!-- -7,6 -->
+					    <g transform='translate(600,-800)' class='tile forest'><!-- -7,7 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(600,-800)' class='tile grass'><!-- -7,7 -->
+					    <g transform='translate(700,-800)' class='tile forest'><!-- -7,8 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(700,-800)' class='tile grass'><!-- -7,8 -->
+					    <g transform='translate(800,-800)' class='tile forest'><!-- -7,9 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(800,-800)' class='tile grass'><!-- -7,9 -->
+					    <g transform='translate(900,-800)' class='tile forest'><!-- -7,10 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(900,-800)' class='tile grass'><!-- -7,10 -->
+					    <g transform='translate(1000,-800)' class='tile forest'><!-- -7,11 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1000,-800)' class='tile grass'><!-- -7,11 -->
+					    <g transform='translate(1100,-800)' class='tile forest'><!-- -7,12 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1100,-800)' class='tile grass'><!-- -7,12 -->
+					    <g transform='translate(1200,-800)' class='tile forest'><!-- -7,13 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1200,-800)' class='tile grass'><!-- -7,13 -->
+					    <g transform='translate(1300,-800)' class='tile forest'><!-- -7,14 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1300,-800)' class='tile grass'><!-- -7,14 -->
-					      <rect x='0' y='0' width='100' height='100' class='bg'/>
-					    </g>
-					    <g transform='translate(1400,-800)' class='tile grass'><!-- -7,15 -->
+					    <g transform='translate(1400,-800)' class='tile forest'><!-- -7,15 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(1500,-800)' class='tile grass'><!-- -7,16 -->
@@ -6269,40 +6392,41 @@
 					    <g transform='translate(200,-700)' class='tile grass'><!-- -6,3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(300,-700)' class='tile grass'><!-- -6,4 -->
+					    <g transform='translate(300,-700)' class='tile forest'><!-- -6,4 -->
+					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 50,0 L 50,100'/>
+					    </g>
+					    <g transform='translate(400,-700)' class='tile forest'><!-- -6,5 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(400,-700)' class='tile grass'><!-- -6,5 -->
+					    <g transform='translate(500,-700)' class='tile forest'><!-- -6,6 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(500,-700)' class='tile grass'><!-- -6,6 -->
+					    <g transform='translate(600,-700)' class='tile forest'><!-- -6,7 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(600,-700)' class='tile grass'><!-- -6,7 -->
+					    <g transform='translate(700,-700)' class='tile forest'><!-- -6,8 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(700,-700)' class='tile grass'><!-- -6,8 -->
+					    <g transform='translate(800,-700)' class='tile forest'><!-- -6,9 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(800,-700)' class='tile grass'><!-- -6,9 -->
+					    <g transform='translate(900,-700)' class='tile forest'><!-- -6,10 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(900,-700)' class='tile grass'><!-- -6,10 -->
+					    <g transform='translate(1000,-700)' class='tile forest'><!-- -6,11 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1000,-700)' class='tile grass'><!-- -6,11 -->
+					    <g transform='translate(1100,-700)' class='tile forest'><!-- -6,12 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1100,-700)' class='tile grass'><!-- -6,12 -->
+					    <g transform='translate(1200,-700)' class='tile forest'><!-- -6,13 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1200,-700)' class='tile grass'><!-- -6,13 -->
+					    <g transform='translate(1300,-700)' class='tile forest'><!-- -6,14 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1300,-700)' class='tile grass'><!-- -6,14 -->
-					      <rect x='0' y='0' width='100' height='100' class='bg'/>
-					    </g>
-					    <g transform='translate(1400,-700)' class='tile grass'><!-- -6,15 -->
+					    <g transform='translate(1400,-700)' class='tile forest'><!-- -6,15 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(1500,-700)' class='tile grass'><!-- -6,16 -->
@@ -6460,7 +6584,7 @@
 					    <g transform='translate(-500,-600)' class='tile grass'><!-- -5,-4 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-400,-600)' class='tile grass'><!-- -5,-3 -->
+					    <g transform='translate(-400,-600)' class='tile deadgrass'><!-- -5,-3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(-300,-600)' class='tile grass'><!-- -5,-2 -->
@@ -6483,38 +6607,39 @@
 					    </g>
 					    <g transform='translate(300,-600)' class='tile grass'><!-- -5,4 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 50,0 L 50,100'/>
 					    </g>
-					    <g transform='translate(400,-600)' class='tile grass'><!-- -5,5 -->
+					    <g transform='translate(400,-600)' class='tile forest'><!-- -5,5 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(500,-600)' class='tile grass'><!-- -5,6 -->
+					    <g transform='translate(500,-600)' class='tile forest'><!-- -5,6 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(600,-600)' class='tile grass'><!-- -5,7 -->
+					    <g transform='translate(600,-600)' class='tile forest'><!-- -5,7 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(700,-600)' class='tile grass'><!-- -5,8 -->
+					    <g transform='translate(700,-600)' class='tile forest'><!-- -5,8 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(800,-600)' class='tile grass'><!-- -5,9 -->
+					    <g transform='translate(800,-600)' class='tile forest'><!-- -5,9 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(900,-600)' class='tile grass'><!-- -5,10 -->
+					    <g transform='translate(900,-600)' class='tile forest'><!-- -5,10 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1000,-600)' class='tile grass'><!-- -5,11 -->
+					    <g transform='translate(1000,-600)' class='tile forest'><!-- -5,11 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1100,-600)' class='tile grass'><!-- -5,12 -->
+					    <g transform='translate(1100,-600)' class='tile forest'><!-- -5,12 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1200,-600)' class='tile grass'><!-- -5,13 -->
+					    <g transform='translate(1200,-600)' class='tile forest'><!-- -5,13 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1300,-600)' class='tile grass'><!-- -5,14 -->
+					    <g transform='translate(1300,-600)' class='tile forest'><!-- -5,14 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1400,-600)' class='tile grass'><!-- -5,15 -->
+					    <g transform='translate(1400,-600)' class='tile forest'><!-- -5,15 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(1500,-600)' class='tile grass'><!-- -5,16 -->
@@ -6669,13 +6794,13 @@
 					    <g transform='translate(-600,-500)' class='tile grass'><!-- -4,-5 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-500,-500)' class='tile grass'><!-- -4,-4 -->
+					    <g transform='translate(-500,-500)' class='tile deadgrass'><!-- -4,-4 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-400,-500)' class='tile grass'><!-- -4,-3 -->
+					    <g transform='translate(-400,-500)' class='tile deadgrass'><!-- -4,-3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-300,-500)' class='tile grass'><!-- -4,-2 -->
+					    <g transform='translate(-300,-500)' class='tile deadgrass'><!-- -4,-2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(-200,-500)' class='tile grass'><!-- -4,-1 -->
@@ -6695,6 +6820,7 @@
 					    </g>
 					    <g transform='translate(300,-500)' class='tile grass'><!-- -4,4 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 50,0 L 50,100'/>
 					    </g>
 					    <g transform='translate(400,-500)' class='tile grass'><!-- -4,5 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
@@ -6705,28 +6831,28 @@
 					    <g transform='translate(600,-500)' class='tile grass'><!-- -4,7 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(700,-500)' class='tile grass'><!-- -4,8 -->
+					    <g transform='translate(700,-500)' class='tile forest'><!-- -4,8 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(800,-500)' class='tile grass'><!-- -4,9 -->
+					    <g transform='translate(800,-500)' class='tile forest'><!-- -4,9 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(900,-500)' class='tile grass'><!-- -4,10 -->
+					    <g transform='translate(900,-500)' class='tile forest'><!-- -4,10 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1000,-500)' class='tile grass'><!-- -4,11 -->
+					    <g transform='translate(1000,-500)' class='tile forest'><!-- -4,11 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1100,-500)' class='tile grass'><!-- -4,12 -->
+					    <g transform='translate(1100,-500)' class='tile forest'><!-- -4,12 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1200,-500)' class='tile grass'><!-- -4,13 -->
+					    <g transform='translate(1200,-500)' class='tile forest'><!-- -4,13 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1300,-500)' class='tile grass'><!-- -4,14 -->
+					    <g transform='translate(1300,-500)' class='tile forest'><!-- -4,14 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1400,-500)' class='tile grass'><!-- -4,15 -->
+					    <g transform='translate(1400,-500)' class='tile forest'><!-- -4,15 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(1500,-500)' class='tile grass'><!-- -4,16 -->
@@ -6875,22 +7001,22 @@
 					    <g transform='translate(-800,-400)' class='tile grass'><!-- -3,-7 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-700,-400)' class='tile grass'><!-- -3,-6 -->
+					    <g transform='translate(-700,-400)' class='tile deadgrass'><!-- -3,-6 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-600,-400)' class='tile grass'><!-- -3,-5 -->
+					    <g transform='translate(-600,-400)' class='tile deadgrass'><!-- -3,-5 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-500,-400)' class='tile grass'><!-- -3,-4 -->
+					    <g transform='translate(-500,-400)' class='tile deadgrass'><!-- -3,-4 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-400,-400)' class='tile grass'><!-- -3,-3 -->
+					    <g transform='translate(-400,-400)' class='tile deadgrass'><!-- -3,-3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-300,-400)' class='tile grass'><!-- -3,-2 -->
+					    <g transform='translate(-300,-400)' class='tile deadgrass'><!-- -3,-2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-200,-400)' class='tile grass'><!-- -3,-1 -->
+					    <g transform='translate(-200,-400)' class='tile deadgrass'><!-- -3,-1 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(-100,-400)' class='tile grass'><!-- -3,0 -->
@@ -6907,6 +7033,7 @@
 					    </g>
 					    <g transform='translate(300,-400)' class='tile grass'><!-- -3,4 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 50,0 L 50,100'/>
 					    </g>
 					    <g transform='translate(400,-400)' class='tile grass'><!-- -3,5 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
@@ -6929,16 +7056,16 @@
 					    <g transform='translate(1000,-400)' class='tile grass'><!-- -3,11 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1100,-400)' class='tile grass'><!-- -3,12 -->
+					    <g transform='translate(1100,-400)' class='tile forest'><!-- -3,12 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1200,-400)' class='tile grass'><!-- -3,13 -->
+					    <g transform='translate(1200,-400)' class='tile forest'><!-- -3,13 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1300,-400)' class='tile grass'><!-- -3,14 -->
+					    <g transform='translate(1300,-400)' class='tile forest'><!-- -3,14 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1400,-400)' class='tile grass'><!-- -3,15 -->
+					    <g transform='translate(1400,-400)' class='tile forest'><!-- -3,15 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(1500,-400)' class='tile grass'><!-- -3,16 -->
@@ -7087,19 +7214,19 @@
 					    <g transform='translate(-800,-300)' class='tile grass'><!-- -2,-7 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-700,-300)' class='tile grass'><!-- -2,-6 -->
+					    <g transform='translate(-700,-300)' class='tile deadgrass'><!-- -2,-6 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-600,-300)' class='tile grass'><!-- -2,-5 -->
+					    <g transform='translate(-600,-300)' class='tile deadgrass'><!-- -2,-5 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-500,-300)' class='tile grass'><!-- -2,-4 -->
+					    <g transform='translate(-500,-300)' class='tile deadgrass'><!-- -2,-4 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-400,-300)' class='tile grass'><!-- -2,-3 -->
+					    <g transform='translate(-400,-300)' class='tile deadgrass'><!-- -2,-3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-300,-300)' class='tile grass'><!-- -2,-2 -->
+					    <g transform='translate(-300,-300)' class='tile deadgrass'><!-- -2,-2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(-200,-300)' class='tile grass'><!-- -2,-1 -->
@@ -7119,6 +7246,7 @@
 					    </g>
 					    <g transform='translate(300,-300)' class='tile grass'><!-- -2,4 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 50,0 L 50,100'/>
 					    </g>
 					    <g transform='translate(400,-300)' class='tile grass'><!-- -2,5 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
@@ -7302,19 +7430,19 @@
 					    <g transform='translate(-700,-200)' class='tile grass'><!-- -1,-6 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-600,-200)' class='tile grass'><!-- -1,-5 -->
+					    <g transform='translate(-600,-200)' class='tile deadgrass'><!-- -1,-5 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-500,-200)' class='tile grass'><!-- -1,-4 -->
+					    <g transform='translate(-500,-200)' class='tile deadgrass'><!-- -1,-4 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-400,-200)' class='tile grass'><!-- -1,-3 -->
+					    <g transform='translate(-400,-200)' class='tile deadgrass'><!-- -1,-3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-300,-200)' class='tile grass'><!-- -1,-2 -->
+					    <g transform='translate(-300,-200)' class='tile deadgrass'><!-- -1,-2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-200,-200)' class='tile grass'><!-- -1,-1 -->
+					    <g transform='translate(-200,-200)' class='tile deadgrass'><!-- -1,-1 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(-100,-200)' class='tile grass'><!-- -1,0 -->
@@ -7331,6 +7459,7 @@
 					    </g>
 					    <g transform='translate(300,-200)' class='tile grass'><!-- -1,4 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 50,0 L 50,100'/>
 					    </g>
 					    <g transform='translate(400,-200)' class='tile grass'><!-- -1,5 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
@@ -7517,59 +7646,79 @@
 					    <g transform='translate(-600,-100)' class='tile grass'><!-- 0,-5 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-500,-100)' class='tile grass'><!-- 0,-4 -->
+					    <g transform='translate(-500,-100)' class='tile deadgrass'><!-- 0,-4 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-400,-100)' class='tile grass'><!-- 0,-3 -->
+					    <g transform='translate(-400,-100)' class='tile deadgrass'><!-- 0,-3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 25,50 L 100,50'/> <!-- corner -->
+					      <path class='trail' d='M 50,25 L 50,100'/>
 					    </g>
-					    <g transform='translate(-300,-100)' class='tile grass'><!-- 0,-2 -->
+					    <g transform='translate(-300,-100)' class='tile deadgrass'><!-- 0,-2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 0,50 L 100,50'/>
 					    </g>
 					    <g transform='translate(-200,-100)' class='tile grass'><!-- 0,-1 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 0,50 L 100,50'/>
 					    </g>
-					    <g transform='translate(-100,-100)' class='tile grass'><!-- 0,0 -->
+					    <g transform='translate(-100,-100)' class='tile grass trail'><!-- 0,0 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 0,50 L 100,50'/>
 					    </g>
 					    <g transform='translate(0,-100)' class='tile grass'><!-- 0,1 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 0,50 L 100,50'/>
 					    </g>
 					    <g transform='translate(100,-100)' class='tile grass'><!-- 0,2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 0,50 L 100,50'/>
 					    </g>
 					    <g transform='translate(200,-100)' class='tile grass'><!-- 0,3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 0,50 L 100,50'/>
+					      <circle cx='50' cy='50' r='25' class='player'/>
 					    </g>
 					    <g transform='translate(300,-100)' class='tile grass'><!-- 0,4 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 0,50 L 100,50'/><!-- 'T' -->
+					      <path class='trail' d='M 50,50 L 50,0'/>
 					    </g>
 					    <g transform='translate(400,-100)' class='tile grass'><!-- 0,5 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 0,50 L 100,50'/>
 					    </g>
 					    <g transform='translate(500,-100)' class='tile grass'><!-- 0,6 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 0,50 L 100,50'/>
 					    </g>
 					    <g transform='translate(600,-100)' class='tile grass'><!-- 0,7 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 0,50 L 100,50'/>
 					    </g>
 					    <g transform='translate(700,-100)' class='tile grass'><!-- 0,8 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 0,50 L 100,50'/>
 					    </g>
 					    <g transform='translate(800,-100)' class='tile grass'><!-- 0,9 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 0,50 L 100,50'/>
 					    </g>
 					    <g transform='translate(900,-100)' class='tile grass'><!-- 0,10 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 0,50 L 100,50'/>
 					    </g>
 					    <g transform='translate(1000,-100)' class='tile grass'><!-- 0,11 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 0,50 L 100,50'/>
 					    </g>
 					    <g transform='translate(1100,-100)' class='tile grass'><!-- 0,12 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 0,50 L 100,50'/>
 					    </g>
 					    <g transform='translate(1200,-100)' class='tile grass'><!-- 0,13 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 0,50 L 100,50'/>
 					    </g>
 					    <g transform='translate(1300,-100)' class='tile grass'><!-- 0,14 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
@@ -7696,28 +7845,28 @@
 					    <g transform='translate(-1700,0)' class='tile grass'><!-- 1,-16 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-1600,0)' class='tile grass'><!-- 1,-15 -->
+					    <g transform='translate(-1600,0)' class='tile water'><!-- 1,-15 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-1500,0)' class='tile grass'><!-- 1,-14 -->
+					    <g transform='translate(-1500,0)' class='tile water'><!-- 1,-14 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-1400,0)' class='tile grass'><!-- 1,-13 -->
+					    <g transform='translate(-1400,0)' class='tile water'><!-- 1,-13 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-1300,0)' class='tile grass'><!-- 1,-12 -->
+					    <g transform='translate(-1300,0)' class='tile water'><!-- 1,-12 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-1200,0)' class='tile grass'><!-- 1,-11 -->
+					    <g transform='translate(-1200,0)' class='tile water'><!-- 1,-11 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-1100,0)' class='tile grass'><!-- 1,-10 -->
+					    <g transform='translate(-1100,0)' class='tile water'><!-- 1,-10 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-1000,0)' class='tile grass'><!-- 1,-9 -->
+					    <g transform='translate(-1000,0)' class='tile water'><!-- 1,-9 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-900,0)' class='tile grass'><!-- 1,-8 -->
+					    <g transform='translate(-900,0)' class='tile water'><!-- 1,-8 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(-800,0)' class='tile grass'><!-- 1,-7 -->
@@ -7729,43 +7878,44 @@
 					    <g transform='translate(-600,0)' class='tile grass'><!-- 1,-5 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-500,0)' class='tile grass'><!-- 1,-4 -->
+					    <g transform='translate(-500,0)' class='tile deadgrass'><!-- 1,-4 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-400,0)' class='tile grass'><!-- 1,-3 -->
+					    <g transform='translate(-400,0)' class='tile deadgrass'><!-- 1,-3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 50,0 L 50,100'/>
 					    </g>
-					    <g transform='translate(-300,0)' class='tile grass'><!-- 1,-2 -->
+					    <g transform='translate(-300,0)' class='tile deadgrass'><!-- 1,-2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(-200,0)' class='tile grass'><!-- 1,-1 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-100,0)' class='tile grass'><!-- 1,0 -->
+					    <g transform='translate(-100,0)' class='tile water'><!-- 1,0 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(0,0)' class='tile grass'><!-- 1,1 -->
+					    <g transform='translate(0,0)' class='tile water'><!-- 1,1 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(100,0)' class='tile grass'><!-- 1,2 -->
+					    <g transform='translate(100,0)' class='tile water'><!-- 1,2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(200,0)' class='tile grass'><!-- 1,3 -->
+					    <g transform='translate(200,0)' class='tile water'><!-- 1,3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(300,0)' class='tile grass'><!-- 1,4 -->
+					    <g transform='translate(300,0)' class='tile water'><!-- 1,4 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(400,0)' class='tile grass'><!-- 1,5 -->
+					    <g transform='translate(400,0)' class='tile water'><!-- 1,5 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(500,0)' class='tile grass'><!-- 1,6 -->
+					    <g transform='translate(500,0)' class='tile water'><!-- 1,6 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(600,0)' class='tile grass'><!-- 1,7 -->
+					    <g transform='translate(600,0)' class='tile water'><!-- 1,7 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(700,0)' class='tile grass'><!-- 1,8 -->
+					    <g transform='translate(700,0)' class='tile water'><!-- 1,8 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(800,0)' class='tile grass'><!-- 1,9 -->
@@ -7777,10 +7927,10 @@
 					    <g transform='translate(1000,0)' class='tile grass'><!-- 1,11 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1100,0)' class='tile grass'><!-- 1,12 -->
+					    <g transform='translate(1100,0)' class='tile water'><!-- 1,12 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1200,0)' class='tile grass'><!-- 1,13 -->
+					    <g transform='translate(1200,0)' class='tile water'><!-- 1,13 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(1300,0)' class='tile grass'><!-- 1,14 -->
@@ -7913,47 +8063,60 @@
 					    </g>
 					    <g transform='translate(-1500,100)' class='tile grass'><!-- 2,-14 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 0,50 L 100,50'/>
 					    </g>
 					    <g transform='translate(-1400,100)' class='tile grass'><!-- 2,-13 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 0,50 L 100,50'/>
 					    </g>
 					    <g transform='translate(-1300,100)' class='tile grass'><!-- 2,-12 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 0,50 L 100,50'/>
 					    </g>
 					    <g transform='translate(-1200,100)' class='tile grass'><!-- 2,-11 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 0,50 L 100,50'/>
 					    </g>
 					    <g transform='translate(-1100,100)' class='tile grass'><!-- 2,-10 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 0,50 L 100,50'/>
 					    </g>
 					    <g transform='translate(-1000,100)' class='tile grass'><!-- 2,-9 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 0,50 L 100,50'/>
 					    </g>
-					    <g transform='translate(-900,100)' class='tile grass'><!-- 2,-8 -->
+					    <g transform='translate(-900,100)' class='tile water'><!-- 2,-8 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 0,50 L 100,50'/>
 					    </g>
 					    <g transform='translate(-800,100)' class='tile grass'><!-- 2,-7 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 0,50 L 100,50'/>
 					    </g>
 					    <g transform='translate(-700,100)' class='tile grass'><!-- 2,-6 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 0,50 L 100,50'/>
 					    </g>
-					    <g transform='translate(-600,100)' class='tile grass'><!-- 2,-5 -->
+					    <g transform='translate(-600,100)' class='tile deadgrass'><!-- 2,-5 -->
+					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 0,50 L 100,50'/>
+					    </g>
+					    <g transform='translate(-500,100)' class='tile deadgrass'><!-- 2,-4 -->
+					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 0,50 L 100,50'/>
+					    </g>
+					    <g transform='translate(-400,100)' class='tile deadgrass'><!-- 2,-3 -->
+					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 50,0 L 50,100'/><!-- 'T' -->
+					      <path class='trail' d='M 50,50 L 0,50'/>
+					    </g>
+					    <g transform='translate(-300,100)' class='tile water'><!-- 2,-2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-500,100)' class='tile grass'><!-- 2,-4 -->
+					    <g transform='translate(-200,100)' class='tile water'><!-- 2,-1 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-400,100)' class='tile grass'><!-- 2,-3 -->
-					      <rect x='0' y='0' width='100' height='100' class='bg'/>
-					    </g>
-					    <g transform='translate(-300,100)' class='tile grass'><!-- 2,-2 -->
-					      <rect x='0' y='0' width='100' height='100' class='bg'/>
-					    </g>
-					    <g transform='translate(-200,100)' class='tile grass'><!-- 2,-1 -->
-					      <rect x='0' y='0' width='100' height='100' class='bg'/>
-					    </g>
-					    <g transform='translate(-100,100)' class='tile grass'><!-- 2,0 -->
+					    <g transform='translate(-100,100)' class='tile water'><!-- 2,0 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(0,100)' class='tile grass'><!-- 2,1 -->
@@ -7962,40 +8125,40 @@
 					    <g transform='translate(100,100)' class='tile grass'><!-- 2,2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(200,100)' class='tile grass'><!-- 2,3 -->
+					    <g transform='translate(200,100)' class='tile water'><!-- 2,3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(300,100)' class='tile grass'><!-- 2,4 -->
+					    <g transform='translate(300,100)' class='tile water'><!-- 2,4 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(400,100)' class='tile grass'><!-- 2,5 -->
+					    <g transform='translate(400,100)' class='tile water'><!-- 2,5 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(500,100)' class='tile grass'><!-- 2,6 -->
+					    <g transform='translate(500,100)' class='tile water'><!-- 2,6 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(600,100)' class='tile grass'><!-- 2,7 -->
+					    <g transform='translate(600,100)' class='tile water'><!-- 2,7 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(700,100)' class='tile grass'><!-- 2,8 -->
+					    <g transform='translate(700,100)' class='tile water'><!-- 2,8 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(800,100)' class='tile grass'><!-- 2,9 -->
+					    <g transform='translate(800,100)' class='tile water'><!-- 2,9 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(900,100)' class='tile grass'><!-- 2,10 -->
+					    <g transform='translate(900,100)' class='tile water'><!-- 2,10 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1000,100)' class='tile grass'><!-- 2,11 -->
+					    <g transform='translate(1000,100)' class='tile water'><!-- 2,11 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1100,100)' class='tile grass'><!-- 2,12 -->
+					    <g transform='translate(1100,100)' class='tile water'><!-- 2,12 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1200,100)' class='tile grass'><!-- 2,13 -->
+					    <g transform='translate(1200,100)' class='tile water'><!-- 2,13 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1300,100)' class='tile grass'><!-- 2,14 -->
+					    <g transform='translate(1300,100)' class='tile water'><!-- 2,14 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(1400,100)' class='tile grass'><!-- 2,15 -->
@@ -8141,28 +8304,29 @@
 					    <g transform='translate(-1000,200)' class='tile grass'><!-- 3,-9 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-900,200)' class='tile grass'><!-- 3,-8 -->
+					    <g transform='translate(-900,200)' class='tile water'><!-- 3,-8 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-800,200)' class='tile grass'><!-- 3,-7 -->
+					    <g transform='translate(-800,200)' class='tile water'><!-- 3,-7 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-700,200)' class='tile grass'><!-- 3,-6 -->
+					    <g transform='translate(-700,200)' class='tile dirtywater'><!-- 3,-6 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-600,200)' class='tile grass'><!-- 3,-5 -->
+					    <g transform='translate(-600,200)' class='tile dirtywater'><!-- 3,-5 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-500,200)' class='tile grass'><!-- 3,-4 -->
+					    <g transform='translate(-500,200)' class='tile dirtywater'><!-- 3,-4 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-400,200)' class='tile grass'><!-- 3,-3 -->
+					    <g transform='translate(-400,200)' class='tile dirtywater'><!-- 3,-3 -->
+					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 50,0 L 50,100'/>
+					    </g>
+					    <g transform='translate(-300,200)' class='tile water'><!-- 3,-2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-300,200)' class='tile grass'><!-- 3,-2 -->
-					      <rect x='0' y='0' width='100' height='100' class='bg'/>
-					    </g>
-					    <g transform='translate(-200,200)' class='tile grass'><!-- 3,-1 -->
+					    <g transform='translate(-200,200)' class='tile water'><!-- 3,-1 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(-100,200)' class='tile grass'><!-- 3,0 -->
@@ -8183,34 +8347,34 @@
 					    <g transform='translate(400,200)' class='tile grass'><!-- 3,5 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(500,200)' class='tile grass'><!-- 3,6 -->
+					    <g transform='translate(500,200)' class='tile water'><!-- 3,6 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(600,200)' class='tile grass'><!-- 3,7 -->
+					    <g transform='translate(600,200)' class='tile water'><!-- 3,7 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(700,200)' class='tile grass'><!-- 3,8 -->
+					    <g transform='translate(700,200)' class='tile water'><!-- 3,8 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(800,200)' class='tile grass'><!-- 3,9 -->
+					    <g transform='translate(800,200)' class='tile water'><!-- 3,9 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(900,200)' class='tile grass'><!-- 3,10 -->
+					    <g transform='translate(900,200)' class='tile water'><!-- 3,10 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1000,200)' class='tile grass'><!-- 3,11 -->
+					    <g transform='translate(1000,200)' class='tile water'><!-- 3,11 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1100,200)' class='tile grass'><!-- 3,12 -->
+					    <g transform='translate(1100,200)' class='tile water'><!-- 3,12 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1200,200)' class='tile grass'><!-- 3,13 -->
+					    <g transform='translate(1200,200)' class='tile water'><!-- 3,13 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1300,200)' class='tile grass'><!-- 3,14 -->
+					    <g transform='translate(1300,200)' class='tile water'><!-- 3,14 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1400,200)' class='tile grass'><!-- 3,15 -->
+					    <g transform='translate(1400,200)' class='tile water'><!-- 3,15 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(1500,200)' class='tile grass'><!-- 3,16 -->
@@ -8356,25 +8520,26 @@
 					    <g transform='translate(-900,300)' class='tile grass'><!-- 4,-8 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-800,300)' class='tile grass'><!-- 4,-7 -->
+					    <g transform='translate(-800,300)' class='tile deadgrass'><!-- 4,-7 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-700,300)' class='tile grass'><!-- 4,-6 -->
+					    <g transform='translate(-700,300)' class='tile deadgrass'><!-- 4,-6 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-600,300)' class='tile grass'><!-- 4,-5 -->
+					    <g transform='translate(-600,300)' class='tile deadgrass'><!-- 4,-5 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-500,300)' class='tile grass'><!-- 4,-4 -->
+					    <g transform='translate(-500,300)' class='tile deadgrass'><!-- 4,-4 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-400,300)' class='tile grass'><!-- 4,-3 -->
+					    <g transform='translate(-400,300)' class='tile deadgrass'><!-- 4,-3 -->
+					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 50,0 L 50,100'/>
+					    </g>
+					    <g transform='translate(-300,300)' class='tile deadgrass'><!-- 4,-2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-300,300)' class='tile grass'><!-- 4,-2 -->
-					      <rect x='0' y='0' width='100' height='100' class='bg'/>
-					    </g>
-					    <g transform='translate(-200,300)' class='tile grass'><!-- 4,-1 -->
+					    <g transform='translate(-200,300)' class='tile water'><!-- 4,-1 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(-100,300)' class='tile grass'><!-- 4,0 -->
@@ -8407,19 +8572,19 @@
 					    <g transform='translate(800,300)' class='tile grass'><!-- 4,9 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(900,300)' class='tile grass'><!-- 4,10 -->
+					    <g transform='translate(900,300)' class='tile water'><!-- 4,10 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1000,300)' class='tile grass'><!-- 4,11 -->
+					    <g transform='translate(1000,300)' class='tile water'><!-- 4,11 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1100,300)' class='tile grass'><!-- 4,12 -->
+					    <g transform='translate(1100,300)' class='tile water'><!-- 4,12 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1200,300)' class='tile grass'><!-- 4,13 -->
+					    <g transform='translate(1200,300)' class='tile water'><!-- 4,13 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1300,300)' class='tile grass'><!-- 4,14 -->
+					    <g transform='translate(1300,300)' class='tile water'><!-- 4,14 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(1400,300)' class='tile grass'><!-- 4,15 -->
@@ -8571,10 +8736,10 @@
 					    <g transform='translate(-800,400)' class='tile grass'><!-- 5,-7 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-700,400)' class='tile grass'><!-- 5,-6 -->
+					    <g transform='translate(-700,400)' class='tile deadgrass'><!-- 5,-6 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-600,400)' class='tile grass'><!-- 5,-5 -->
+					    <g transform='translate(-600,400)' class='tile deadgrass'><!-- 5,-5 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(-500,400)' class='tile grass'><!-- 5,-4 -->
@@ -8582,11 +8747,12 @@
 					    </g>
 					    <g transform='translate(-400,400)' class='tile grass'><!-- 5,-3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 50,0 L 50,100'/>
 					    </g>
 					    <g transform='translate(-300,400)' class='tile grass'><!-- 5,-2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-200,400)' class='tile grass'><!-- 5,-1 -->
+					    <g transform='translate(-200,400)' class='tile water'><!-- 5,-1 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(-100,400)' class='tile grass'><!-- 5,0 -->
@@ -8622,10 +8788,10 @@
 					    <g transform='translate(900,400)' class='tile grass'><!-- 5,10 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1000,400)' class='tile grass'><!-- 5,11 -->
+					    <g transform='translate(1000,400)' class='tile water'><!-- 5,11 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(1100,400)' class='tile grass'><!-- 5,12 -->
+					    <g transform='translate(1100,400)' class='tile water'><!-- 5,12 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(1200,400)' class='tile grass'><!-- 5,13 -->
@@ -8794,14 +8960,15 @@
 					    </g>
 					    <g transform='translate(-400,500)' class='tile grass'><!-- 6,-3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 50,0 L 50,100'/>
 					    </g>
 					    <g transform='translate(-300,500)' class='tile grass'><!-- 6,-2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-200,500)' class='tile grass'><!-- 6,-1 -->
+					    <g transform='translate(-200,500)' class='tile water'><!-- 6,-1 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-100,500)' class='tile grass'><!-- 6,0 -->
+					    <g transform='translate(-100,500)' class='tile water'><!-- 6,0 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(0,500)' class='tile grass'><!-- 6,1 -->
@@ -9006,6 +9173,7 @@
 					    </g>
 					    <g transform='translate(-400,600)' class='tile grass'><!-- 7,-3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 50,0 L 50,100'/>
 					    </g>
 					    <g transform='translate(-300,600)' class='tile grass'><!-- 7,-2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
@@ -9013,7 +9181,7 @@
 					    <g transform='translate(-200,600)' class='tile grass'><!-- 7,-1 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-100,600)' class='tile grass'><!-- 7,0 -->
+					    <g transform='translate(-100,600)' class='tile water'><!-- 7,0 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(0,600)' class='tile grass'><!-- 7,1 -->
@@ -9218,6 +9386,7 @@
 					    </g>
 					    <g transform='translate(-400,700)' class='tile grass'><!-- 8,-3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 50,0 L 50,100'/>
 					    </g>
 					    <g transform='translate(-300,700)' class='tile grass'><!-- 8,-2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
@@ -9225,7 +9394,7 @@
 					    <g transform='translate(-200,700)' class='tile grass'><!-- 8,-1 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-100,700)' class='tile grass'><!-- 8,0 -->
+					    <g transform='translate(-100,700)' class='tile water'><!-- 8,0 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(0,700)' class='tile grass'><!-- 8,1 -->
@@ -9430,14 +9599,15 @@
 					    </g>
 					    <g transform='translate(-400,800)' class='tile grass'><!-- 9,-3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 50,0 L 50,100'/>
 					    </g>
 					    <g transform='translate(-300,800)' class='tile grass'><!-- 9,-2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-200,800)' class='tile grass'><!-- 9,-1 -->
+					    <g transform='translate(-200,800)' class='tile water'><!-- 9,-1 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-100,800)' class='tile grass'><!-- 9,0 -->
+					    <g transform='translate(-100,800)' class='tile water'><!-- 9,0 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(0,800)' class='tile grass'><!-- 9,1 -->
@@ -9642,11 +9812,12 @@
 					    </g>
 					    <g transform='translate(-400,900)' class='tile grass'><!-- 10,-3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 50,0 L 50,100'/>
 					    </g>
 					    <g transform='translate(-300,900)' class='tile grass'><!-- 10,-2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-200,900)' class='tile grass'><!-- 10,-1 -->
+					    <g transform='translate(-200,900)' class='tile water'><!-- 10,-1 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(-100,900)' class='tile grass'><!-- 10,0 -->
@@ -9854,11 +10025,12 @@
 					    </g>
 					    <g transform='translate(-400,1000)' class='tile grass'><!-- 11,-3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 50,0 L 50,100'/>
 					    </g>
 					    <g transform='translate(-300,1000)' class='tile grass'><!-- 11,-2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-200,1000)' class='tile grass'><!-- 11,-1 -->
+					    <g transform='translate(-200,1000)' class='tile water'><!-- 11,-1 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(-100,1000)' class='tile grass'><!-- 11,0 -->
@@ -10066,11 +10238,12 @@
 					    </g>
 					    <g transform='translate(-400,1100)' class='tile grass'><!-- 12,-3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 50,0 L 50,100'/>
 					    </g>
 					    <g transform='translate(-300,1100)' class='tile grass'><!-- 12,-2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-200,1100)' class='tile grass'><!-- 12,-1 -->
+					    <g transform='translate(-200,1100)' class='tile water'><!-- 12,-1 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(-100,1100)' class='tile grass'><!-- 12,0 -->
@@ -10278,11 +10451,12 @@
 					    </g>
 					    <g transform='translate(-400,1200)' class='tile grass'><!-- 13,-3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 50,0 L 50,100'/>
 					    </g>
 					    <g transform='translate(-300,1200)' class='tile grass'><!-- 13,-2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-200,1200)' class='tile grass'><!-- 13,-1 -->
+					    <g transform='translate(-200,1200)' class='tile water'><!-- 13,-1 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(-100,1200)' class='tile grass'><!-- 13,0 -->
@@ -10490,11 +10664,12 @@
 					    </g>
 					    <g transform='translate(-400,1300)' class='tile grass'><!-- 14,-3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 50,0 L 50,100'/>
 					    </g>
 					    <g transform='translate(-300,1300)' class='tile grass'><!-- 14,-2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-200,1300)' class='tile grass'><!-- 14,-1 -->
+					    <g transform='translate(-200,1300)' class='tile water'><!-- 14,-1 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(-100,1300)' class='tile grass'><!-- 14,0 -->
@@ -10702,11 +10877,12 @@
 					    </g>
 					    <g transform='translate(-400,1400)' class='tile grass'><!-- 15,-3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 50,0 L 50,100'/>
 					    </g>
 					    <g transform='translate(-300,1400)' class='tile grass'><!-- 15,-2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-200,1400)' class='tile grass'><!-- 15,-1 -->
+					    <g transform='translate(-200,1400)' class='tile water'><!-- 15,-1 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(-100,1400)' class='tile grass'><!-- 15,0 -->
@@ -10914,11 +11090,12 @@
 					    </g>
 					    <g transform='translate(-400,1500)' class='tile grass'><!-- 16,-3 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
+					      <path class='trail' d='M 50,0 L 50,100'/> 
 					    </g>
 					    <g transform='translate(-300,1500)' class='tile grass'><!-- 16,-2 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
-					    <g transform='translate(-200,1500)' class='tile grass'><!-- 16,-1 -->
+					    <g transform='translate(-200,1500)' class='tile water'><!-- 16,-1 -->
 					      <rect x='0' y='0' width='100' height='100' class='bg'/>
 					    </g>
 					    <g transform='translate(-100,1500)' class='tile grass'><!-- 16,0 -->
@@ -15063,12 +15240,15 @@
 						<path id='x' d='M -3500,0 L 3500,0'/><path id='y' d='M 0,-3500 L 0,3500'/>
 					</g>
 				</svg>
-				<rect id='board_border' x='2.5%' y='2.5%' rx='30' ry='30' width='95%' height='95%' clip-path='url(#zoomer_clip)'/>
-				<rect id='board_corners' x='-2.5%' y='-2.5%' rx='50' ry='50' width='105%' height='105%'/>
 				
-				<g id='zoomer' style="visibility: visible;">
-          <rect id='zoomer_capsule' x='10%' y='5%' rx='1.5%' ry='100%' width='80%' height='2.5%'/>
-          <rect id='zoomer_handle' x='40%' y='5%' width='20%' height='2.5%' style='fill: white; fill-opacity: 0.75;'/>
+				<g id='borders'>
+				  <rect id='board_border' x='2.5%' y='2.5%' rx='30' ry='30' width='95%' height='95%' clip-path='url(#zoomer_clip)'/>
+  				<rect id='board_corners' x='-2.5%' y='-2.5%' rx='50' ry='50' width='105%' height='105%'/>
+  			</g>
+				
+				<g id='zoomer'>
+          <rect id='zoomer_capsule' x='10%' y='5%' rx='2%' ry='100%' width='80%' height='3.5%'/>
+          <rect id='zoomer_handle' x='25%' y='5%' rx='2%' ry='100%' width='50%' height='3.5%'/>
 			  </g>
 			  
 			</svg>
@@ -15078,6 +15258,7 @@
 					<li>drag-and-drop editing</li>
 					<li>click interaction/tile information</li>
 					<li>un-loading and XHR loading (to be able to reliably load and render maps larger than the current soft maximum of 70x70 tiles)</li>
+					<li>button to center map</li>
 				</ul>
 			</div>
 		</div>
