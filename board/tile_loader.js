@@ -1,5 +1,5 @@
 // Uses XMLHttpRequest to get a json object from a URI
-function JSONHttpRequest(URI, onResponse, method_opt, charset_opt){
+function JSONHttpRequest(URI, onResponse, method_opt, charset_opt) {
   var method = method_opt || 'GET';
   var charset = charset_opt || 'utf-8';
   
@@ -10,7 +10,7 @@ function JSONHttpRequest(URI, onResponse, method_opt, charset_opt){
   request.onreadystatechange = function() {
     if (request.readyState == 4 && request.status == 200) {
       if (request.responseText) {
-        onResponse(JSON.parse(request.responseText)['body']);
+        onResponse( (JSON.parse(request.responseText))['body'] );
       }
     }
   }
@@ -19,33 +19,33 @@ function JSONHttpRequest(URI, onResponse, method_opt, charset_opt){
 }
 
 var cachedMap;
-function switchToMap(id){
+function switchToMap(id) {
   int_id = parseInt(id);
-  retrieveMap(int_id, function(map){
+  retrieveMap(int_id, function(map) {
     clearElementById('tiles');
     cachedMap = map;
     writeMap(map);
   });
 }
 
-function retrieveMap(id, onRetrieve){
+function retrieveMap(id, onRetrieve) {
   JSONHttpRequest(API_URI + '/map/' + id, onRetrieve);
 }
 
-function writeMap(map){
+function writeMap(map) {
   var xTranslate;
   var yTranslate;
   
   var rows = map.length;
-  for (var row = rows - 1; row >= 0; row--){
+  for (var row = rows - 1; row >= 0; row--) {
     
     var yTranslate = (-( parseFloat(rows) / 2.0 ) + parseFloat(row)) * -100.0;
     var cols = map[row].length;
-    for (var col = rows - 1; col >= 0; col--){
+    for (var col = rows - 1; col >= 0; col--) {
       
       var xTranslate = (-( parseFloat(cols) / 2.0 ) + parseFloat(col)) * -100.0;
       var tiles = map[row][col].length;
-      for (var tile = tiles - 1; tile >= 0; tile--){
+      for (var tile = tiles - 1; tile >= 0; tile--) {
         // console.log(map[row][col][tile], xTranslate, yTranslate);
         addTile(map[row][col][tile], xTranslate, yTranslate);
       };
@@ -53,17 +53,17 @@ function writeMap(map){
   };
 }
 
-function addTile(id, xTranslate, yTranslate){
-  int_id = parseInt(id);
+function addTile(id, xTranslate, yTranslate) {
+  intId = parseInt(id);
   
-  retrieveTile(int_id, function(tile){
-    // We write the SVG here - any necessary CSS should be written by 
+  retrieveTile( intId, function(tile) {
+    // We write only the SVG here - any necessary CSS should be written by 
     // retrieveTile() if necessary.
-    writeSVG(unescape(tile['svg']), document.getElementById('tiles'), ['tile', tile['name']], function(attr){
+    writeSVG( unescape(tile['svg']), document.getElementById('tiles'), ['tile', tile['name']], function(attr) {
       attr['transform'] = 'translate(' + xTranslate + ',' + yTranslate + ')';
       return attr;
-    });
-  });
+    } );
+  } );
 }
 
 // This will retrieve a tile as JSON, caching all previously requested
@@ -71,9 +71,9 @@ function addTile(id, xTranslate, yTranslate){
 // JHR, we can't return the tile itself - you have to pass a function
 // to retrieveTile() documenting how you want to deal with the tile.
 var cachedTiles = new Array();
-function retrieveTile(id, onRetrieve){
+function retrieveTile(id, onRetrieve) {
   var cachedTile = cachedTiles[ parseInt(id) ]
-  if(cachedTile == 'undefined' || cachedTile == null){
+  if(cachedTile == 'undefined' || cachedTile == null) {
     
     // If we haven't been grabbed before, we need to add the tile to
     // the cache and add any relevant CSS to the page on retrieval and
@@ -93,7 +93,7 @@ function retrieveTile(id, onRetrieve){
   }
 }
 
-function writeCSS(cssSource){
+function writeCSS(cssSource) {
   var styleNode = document.createElement('style');
   // var innerCSS = document.createTextNodeNs(SVG_NS, cssSource); // WTF? Why not the Ns version?
   var innerCSS = document.createTextNode(cssSource);
@@ -103,15 +103,15 @@ function writeCSS(cssSource){
 }
 
 // importNode the parentNode to the document before running this!
-function writeSVG(svgSource, parentNode, classes, attributesFunction){
+function writeSVG(svgSource, parentNode, classes, attributesFunction) {
   var svgNode = document.createElementNS(SVG_NS, 'g');
-  for (var klass = classes.length - 1; klass >= 0; klass--){
+  for (var klass = classes.length - 1; klass >= 0; klass--) {
     addSVGClass(svgNode, classes[klass])
   };
   
-  if(attributesFunction != 'undefined'){
+  if(attributesFunction != 'undefined') {
     var attributes = attributesFunction(new Array());
-    for(var attribute in attributes){
+    for(var attribute in attributes) {
       svgNode.setAttributeNS(null, attribute, attributes[attribute]);
     };
   }
