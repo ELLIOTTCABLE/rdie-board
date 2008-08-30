@@ -53,17 +53,54 @@ function writeMap(map) {
   };
 }
 
+// Adds a new tile to the grid. Gets the tile from the server, and prints
+// anything necessary to display it to the page.
 function addTile(id, xTranslate, yTranslate) {
-  var intId = parseInt(id);
+  var tileId = parseInt(id)
   
-  retrieveTile( intId, function(tile) {
-    // We write only the SVG here - any necessary CSS should be written by 
-    // retrieveTile() if necessary.
+  queueHookForTile(tileId, function(tile){
     writeSVG( unescape(tile['svg']), document.getElementById('tiles'), ['tile', tile['name']], function(attr) {
       attr['transform'] = 'translate(' + xTranslate + ',' + yTranslate + ')';
       return attr;
     } );
-  } );
+  });
+}
+
+// Once loaded, all a tile's hook queue entries will be run, and any hook
+// passed to this after that point will be run directly. The first hook passed
+// to this causes the tile to be requested for loading.
+// 
+// Returnes the tile if it's already cached, true if it's already been queued,
+// and false if this is the first time it's been requested.
+var queuedTiles = new Array();
+function queueHookForTile (id, hook) {
+  var tileId = parseInt(id)
+  // If we've already got the tile, just run the hook on it now.
+  var cachedTile = cachedTiles[tileId];
+  if(cachedTile != 'undefined' && cachedTile != null) {
+    hook(cachedTile);
+    return cachedTile;
+  }
+  
+  // If it's not retreived yet, but it's been requested, add our hook to the
+  // queue
+  var tileQueue = queuedTiles[tileId];
+  if(tileQueue != 'undefined' && tileQueue != null) {
+    tileQueue.push(hook);
+    return true;
+  }
+  
+  // If it's not been queued, we'll queue it now, and actually request the
+  // tile.
+  queuedTiles[tileId] = new Array();
+  queuedTiles[tileId].push(hook);
+  retrieveTile( tileId, function(tile) {
+    for (var i = queuedTiles[tileId].length - 1; i >= 0; i--){
+      queuedTiles[tileId][i](tile);
+    };
+  });
+  
+  return false;
 }
 
 // This will retrieve a tile as JSON, caching all previously requested
@@ -72,25 +109,11 @@ function addTile(id, xTranslate, yTranslate) {
 // to retrieveTile() documenting how you want to deal with the tile.
 var cachedTiles = new Array();
 function retrieveTile(id, onRetrieve) {
-  var cachedTile = cachedTiles[ parseInt(id) ]
-  if(cachedTile == 'undefined' || cachedTile == null) {
-    
-    // If we haven't been grabbed before, we need to add the tile to
-    // the cache and add any relevant CSS to the page on retrieval and
-    // then run the requested onRetrieve call once we JHR the tile.
-    JSONHttpRequest(API_URI + '/tile/' + id, function(tile) {
-      cachedTiles[ parseInt(tile['id']) ] = tile;
-      writeCSS( unescape(tile['css']) );
-      onRetrieve(tile);
-    });
-    
-  } else {
-    
-    // If it's been cached before, no need to write the CSS - we'll
-    // just run the call.
-    onRetrieve( cachedTiles[parseInt(id)] );
-    
-  }
+  JSONHttpRequest(API_URI + '/tile/' + id, function(tile) {
+    cachedTiles[ parseInt(tile['id']) ] = tile;
+    writeCSS( unescape(tile['css']) );
+    onRetrieve(tile);
+  });
 }
 
 function writeCSS(cssSource) {
