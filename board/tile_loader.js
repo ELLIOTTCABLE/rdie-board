@@ -41,7 +41,7 @@ function writeMap(map) {
     
     var yTranslate = -(-( parseFloat(rows) / 2.0 ) + parseFloat(row) + 1);
     var cols = map[row].length;
-    for (var col = rows - 1; col >= 0; col--) {
+    for (var col = cols - 1; col >= 0; col--) {
       
       var xTranslate = -(-( parseFloat(cols) / 2.0 ) + parseFloat(col) + 1);
       var tiles = map[row][col].length;
