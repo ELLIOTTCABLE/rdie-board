@@ -73,7 +73,7 @@ end
 
 Tile.new :null # Tile of ID 0 should always be an empty tile named 'null'
 Tile.new :test do |tile|
-  tile.css = ".background { fill: #00CC00; }"
+  tile.css = ".background { fill: #00AA00; }"
 end
 Tile.new :grass do |tile|
   tile.css = ".background { fill: #009900; }"
