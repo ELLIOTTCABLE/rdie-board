@@ -1,0 +1,467 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN" "http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd">
+<!-- ===================================
+	= Created by elliottcable: elliottcable.name
+	= Code (NOT CONTENT) available under Creative Commons BY-NC-SA 3.0
+	=    (creativecommons.org/licenses/by-nc-sa/3.0)
+	= Content available under whatever license is specifically noted, or
+	=    is released under the same license as the code if no license
+	=    is specified
+	=================================== -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang='en'>
+	<head profile="http://gmpg.org/xfn/11">
+		<meta http-equiv="Content-Type" content="application/xhtml+xml;charset=utf-8"/>
+		<title>game board test</title>
+		<link rel="copyright" href="http://creativecommons.org/licenses/by-nc-sa/3.0/" type="text/html;charset=utf-8" />
+		<link rel="stylesheet" href="http://files.elliottcable.name/SASS/compiled/mini.css" type="text/css;charset=utf-8" />
+		<style>
+			<![CDATA[
+				html {
+					background: #FFFFFF;
+				}
+				body {
+					background: #000000;
+				}
+				#everything {
+					width: 100%;
+					height: 100%;
+				}
+				
+				#map {
+					margin-left: auto;
+					margin-right: auto;
+				}
+				
+				.tile {
+					stroke: grey;
+					stroke-width: 1;
+				}
+				
+				.grass .bg {
+					fill: green;
+				}
+				
+				path.trail {
+					fill: none;
+					stroke: #993300;
+					stroke-width: 25;
+				}
+			]]>
+		</style>
+		<script type="text/javascript" src="http://yui.yahooapis.com/2.4.1/build/yuiloader/yuiloader-beta-min.js" ></script>
+		<script type="text/javascript">
+			<![CDATA[
+				var targetObject = null;
+				
+				function getSvgLoc(svgElement,theEvent){
+					// Let's work some magic! (IOW, I have no idea how this works yet)
+					var matrix = svgElement.getScreenCTM();
+					var mouseX = matrix.inverse().a*theEvent.clientX+matrix.inverse().c*theEvent.clientY+matrix.inverse().e;
+					var mouseY = matrix.inverse().b*theEvent.clientX+matrix.inverse().d*theEvent.clientY+matrix.inverse().f;
+					var mouseLoc = new Array(mouseX,mouseY);
+					return mouseLoc;
+				}
+				
+				function moveHandler(theEvent){
+					if (theEvent == null) { theEvent = window.event } 
+					if (theEvent.button <= 1 && dragOK){
+						var mouseLoc = getSvgLoc(board,theEvent)
+						
+						// viewBox[0] = mouseX - startX
+						// viewBox[1] = mouseY - startY
+						var distance = new Array(2)
+						distance[0] = mouseLoc[0] - startMouseLoc[0]
+						distance[1] = mouseLoc[1] - startMouseLoc[1]
+						
+						// console.log("mouseLoc", mouseLoc, " & distance", distance)
+						
+						viewBox[0] = startViewBox[0] - distance[0]
+						viewBox[1] = startViewBox[1] - distance[1]
+						
+						board.setAttribute('viewBox',viewBox.join(' '))
+						return false;
+					}
+				}
+
+				function cleanup(theEvent) {
+					document.onmousemove=null;
+					document.onmouseup=null;
+					board.style.cursor=orgCursor;
+					dragOK = false;
+				}
+
+				function dragHandler(theEvent){
+					if (theEvent == null) { theEvent = window.event; } 
+					var target = theEvent.target != null ? theEvent.target : theEvent.srcElement;
+					targetObject = target;
+					orgCursor = target.style.cursor;
+					
+					// I need to check if the clicked element is eventually a child of the #board object
+					parentNode = target.parentNode
+					while (parentNode) {
+						if (parentNode.id === "board") {
+							board = parentNode
+							board.style.cursor = '-moz-grabbing';
+							dragOK = true;
+							
+							startViewBox = board.getAttribute('viewBox').split(' ').map(function(str){return parseInt(str);})
+							viewBox = startViewBox
+							startMouseLoc = getSvgLoc(board,theEvent)
+							
+							document.onmousemove = moveHandler;
+							document.onmouseup = cleanup;
+							return false;
+						};
+						parentNode = parentNode.parentNode
+					}
+				}
+
+				document.onmousedown=dragHandler;
+			]]>
+		</script>
+	</head>
+	<body>
+		<div id="everything">
+			<svg id="map" width="50em" height="50em" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+				<svg id="board" viewBox="250 250 500 500" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+					<desc>Example game board test test</desc>
+
+		<!-- Row 1 -->
+					<g transform="translate(0,0)" class="tile grass"><!-- 1,1 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(100,0)" class="tile grass"><!-- 1,2 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(200,0)" class="tile grass"><!-- 1,3 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(300,0)" class="tile grass"><!-- 1,4 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(400,0)" class="tile grass"><!-- 1,5 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(500,0)" class="tile grass"><!-- 1,6 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(600,0)" class="tile grass"><!-- 1,7 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(700,0)" class="tile grass"><!-- 1,8 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(800,0)" class="tile grass"><!-- 1,9 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(900,0)" class="tile grass"><!-- 1,10 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+
+		<!-- Row 2 -->
+					<g transform="translate(0,100)" class="tile grass"><!-- 2,1 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(100,100)" class="tile grass"><!-- 2,2 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(200,100)" class="tile grass"><!-- 2,3 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(300,100)" class="tile grass"><!-- 2,4 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(400,100)" class="tile grass"><!-- 2,5 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(500,100)" class="tile grass"><!-- 2,6 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(600,100)" class="tile grass"><!-- 2,7 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(700,100)" class="tile grass"><!-- 2,8 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(800,100)" class="tile grass"><!-- 2,9 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(900,100)" class="tile grass"><!-- 2,10 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+
+		<!-- Row 3 -->
+					<g transform="translate(0,200)" class="tile grass"><!-- 3,1 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+						<path d="M 0 50 L 100 50" class="trail"/><!-- straight path -->
+					</g>
+					<g transform="translate(100,200)" class="tile grass"><!-- 3,2 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+						<path d="M 0 50 L 100 50" class="trail"/><!-- straight path -->
+					</g>
+					<g transform="translate(200,200)" class="tile grass"><!-- 3,3 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+						<path d="M 0 50 L 100 50" class="trail"/><!-- straight path -->
+					</g>
+					<g transform="translate(300,200)" class="tile grass"><!-- 3,4 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+						<path d="M0,50 Q50,50 50,100" class="trail"/><!-- path corner -->
+					</g>
+					<g transform="translate(400,200)" class="tile grass"><!-- 3,5 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(500,200)" class="tile grass"><!-- 3,6 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(600,200)" class="tile grass"><!-- 3,7 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(700,200)" class="tile grass"><!-- 3,8 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(800,200)" class="tile grass"><!-- 3,9 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(900,200)" class="tile grass"><!-- 3,10 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+
+		<!-- Row 4 -->
+					<g transform="translate(0,300)" class="tile grass"><!-- 4,1 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(100,300)" class="tile grass"><!-- 4,2 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(200,300)" class="tile grass"><!-- 4,3 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(300,300) rotate(90) translate(0,-100)" class="tile grass"><!-- 4,4 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+						<path d="M 0 50 L 100 50" class="trail"/><!-- straight path -->
+					</g>
+					<g transform="translate(400,300)" class="tile grass"><!-- 4,5 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(500,300)" class="tile grass"><!-- 4,6 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(600,300)" class="tile grass"><!-- 4,7 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(700,300)" class="tile grass"><!-- 4,8 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(800,300)" class="tile grass"><!-- 4,9 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(900,300)" class="tile grass"><!-- 4,10 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+
+		<!-- Row 5 -->
+					<g transform="translate(0,400)" class="tile grass"><!-- 5,1 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(100,400)" class="tile grass"><!-- 5,2 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(200,400)" class="tile grass"><!-- 5,3 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(300,400) rotate(180) translate(-100,-100)" class="tile grass"><!-- 5,4 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+						<path d="M0,50 Q50,50 50,100" class="trail"/><!-- path corner -->
+					</g>
+					<g transform="translate(400,400)" class="tile grass"><!-- 5,5 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+						<path d="M 0 50 L 100 50" class="trail"/><!-- straight path -->
+					</g>
+					<g transform="translate(500,400)" class="tile grass"><!-- 5,6 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+						<path d="M 0 50 L 100 50" class="trail"/><!-- straight path -->
+					</g>
+					<g transform="translate(600,400)" class="tile grass"><!-- 5,7 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+						<path d="M 0 50 L 100 50" class="trail"/><!-- straight path -->
+					</g>
+					<g transform="translate(700,400)" class="tile grass"><!-- 5,8 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+						<path d="M 0 50 L 100 50" class="trail"/><!-- straight path -->
+					</g>
+					<g transform="translate(800,400)" class="tile grass"><!-- 5,9 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+						<path d="M 0 50 L 100 50" class="trail"/><!-- straight path -->
+					</g>
+					<g transform="translate(900,400)" class="tile grass"><!-- 5,10 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+						<path d="M 0 50 L 100 50" class="trail"/><!-- straight path -->
+					</g>
+
+		<!-- Row 6 -->
+					<g transform="translate(0,500)" class="tile grass"><!-- 6,1 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(100,500)" class="tile grass"><!-- 6,2 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(200,500)" class="tile grass"><!-- 6,3 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(300,500)" class="tile grass"><!-- 6,4 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(400,500)" class="tile grass"><!-- 6,5 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(500,500)" class="tile grass"><!-- 6,6 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(600,500)" class="tile grass"><!-- 6,7 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(700,500)" class="tile grass"><!-- 6,8 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(800,500)" class="tile grass"><!-- 6,9 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(900,500)" class="tile grass"><!-- 6,10 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+
+		<!-- Row 7 -->
+					<g transform="translate(0,600)" class="tile grass"><!-- 7,1 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(100,600)" class="tile grass"><!-- 7,2 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(200,600)" class="tile grass"><!-- 7,3 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(300,600)" class="tile grass"><!-- 7,4 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(400,600)" class="tile grass"><!-- 7,5 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(500,600)" class="tile grass"><!-- 7,6 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(600,600)" class="tile grass"><!-- 7,7 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(700,600)" class="tile grass"><!-- 7,8 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(800,600)" class="tile grass"><!-- 7,9 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(900,600)" class="tile grass"><!-- 7,10 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+
+		<!-- Row 8 -->
+					<g transform="translate(0,700)" class="tile grass"><!-- 8,1 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(100,700)" class="tile grass"><!-- 8,2 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(200,700)" class="tile grass"><!-- 8,3 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(300,700)" class="tile grass"><!-- 8,4 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(400,700)" class="tile grass"><!-- 8,5 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(500,700)" class="tile grass"><!-- 8,6 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(600,700)" class="tile grass"><!-- 8,7 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(700,700)" class="tile grass"><!-- 8,8 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(800,700)" class="tile grass"><!-- 8,9 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(900,700)" class="tile grass"><!-- 8,10 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+
+		<!-- Row 9 -->
+					<g transform="translate(0,800)" class="tile grass"><!-- 9,1 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(100,800)" class="tile grass"><!-- 9,2 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(200,800)" class="tile grass"><!-- 9,3 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(300,800)" class="tile grass"><!-- 9,4 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(400,800)" class="tile grass"><!-- 9,5 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(500,800)" class="tile grass"><!-- 9,6 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(600,800)" class="tile grass"><!-- 9,7 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(700,800)" class="tile grass"><!-- 9,8 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(800,800)" class="tile grass"><!-- 9,9 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(900,800)" class="tile grass"><!-- 9,10 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+
+		<!-- Row 10 -->
+					<g transform="translate(0,900)" class="tile grass"><!-- 10,1 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(100,900)" class="tile grass"><!-- 10,2 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(200,900)" class="tile grass"><!-- 10,3 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(300,900)" class="tile grass"><!-- 10,4 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(400,900)" class="tile grass"><!-- 10,5 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(500,900)" class="tile grass"><!-- 10,6 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(600,900)" class="tile grass"><!-- 10,7 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(700,900)" class="tile grass"><!-- 10,8 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(800,900)" class="tile grass"><!-- 10,9 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+					<g transform="translate(900,900)" class="tile grass"><!-- 10,10 -->
+						<rect x="0" y="0" width="100" height="100" class="bg"/>
+					</g>
+
+					<rect x="0" y="0" width="1000" height="1000" style="fill: none; stroke: black; stroke-width: 6;"/>
+				</svg>
+				<rect x="0" y="0" width="100%" height="100%" style="fill: none; stroke: white; stroke-width: 10;"/>
+			</svg>
+		</div>
+	</body>
+</html>
