@@ -54,7 +54,7 @@ function writeMap(map) {
 }
 
 function addTile(id, xTranslate, yTranslate) {
-  intId = parseInt(id);
+  var intId = parseInt(id);
   
   retrieveTile( intId, function(tile) {
     // We write only the SVG here - any necessary CSS should be written by 
