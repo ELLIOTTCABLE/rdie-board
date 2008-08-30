@@ -61,6 +61,7 @@ function addTile(id, xTranslate, yTranslate) {
   queueHookForTile(tileId, function(tile){
     writeSVG( unescape(tile['svg']), document.getElementById('tiles'), ['tile', tile['name']], function(attr) {
       attr['transform'] = 'translate(' + (xTranslate * 100) + ',' + (yTranslate * 100) + ')';
+      attr['id'] = 'tile:' + xTranslate + '.' + yTranslate;
       return attr;
     } );
   });
