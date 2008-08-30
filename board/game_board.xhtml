@@ -1,263 +1,263 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN' 'http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd'>
 <!-- ===================================
-	= Created by elliottcable: elliottcable.name
-	= Code (NOT CONTENT) available under Creative Commons BY-NC-SA 3.0
-	=    (creativecommons.org/licenses/by-nc-sa/3.0)
-	= Content available under whatever license is specifically noted, or
-	=    is released under the same license as the code if no license
-	=    is specified
-	=================================== -->
+  = Created by elliottcable: elliottcable.name
+  = Code (NOT CONTENT) available under Creative Commons BY-NC-SA 3.0
+  =    (creativecommons.org/licenses/by-nc-sa/3.0)
+  = Content available under whatever license is specifically noted, or
+  =    is released under the same license as the code if no license
+  =    is specified
+  =================================== -->
 <html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' debug='true'>
-	<head profile='http://gmpg.org/xfn/11'>
-		<meta http-equiv='Content-Type' content='application/xhtml+xml;charset=utf-8'/>
-		<title>Game Board test file v4</title>
-		<link rel='copyright' href='http://creativecommons.org/licenses/by-nc-sa/3.0/' type='text/html;charset=utf-8' />
-		<!-- <link rel='stylesheet' href='http://files.elliottcable.name/SASS/compiled/mini.css' type='text/css;charset=utf-8' /> -->
-		<style tyle="text/css" id="hardcoded">
-			<![CDATA[
-				* {
-					margin: 0;
-					padding: 0;
-				}
-				html, body {
-					height: 100%;
-				}
-				html {
-					background: #000000;
-					color: #FFFFFF;
-				}
-				body {
-					position: relative;
-					display: table;
-				 	margin: 0 auto;
-				 	vertical-align: middle;
-				}
-				#everything {
-					width: 50em;
-					display: table-cell;
-					vertical-align: middle;
-				}
-				h1, h2, h3, h4, h5, h6 {
-					padding-top: 0.3em;
-					padding-bottom: 0.1em;
-					text-align: center;
-					font-variant: small-caps;
-					font-family: 'Hoefler Text', serif;
-					color: #AAAAAA;
-				}
-				h1 {
-					font-size: 36pt;
-				}
-				h2 {
-					font-size: 28pt;
-				}
-				#description {
-				  text-align: center;
-				}
-				
-				#board {
-					margin-left: auto;
-					margin-right: auto;
-				}
-				
-				#board_border {
-					fill: none;
-					stroke: white;
-					stroke-width: 5;
-				}
-				#board_corners {
-					fill: none;
-					stroke: black;
-					stroke-width: 25;
-				}
-				
-				.map_border {
-					fill: none;
-					stroke: white;
-					stroke-width: 10;
-				}
-				
-				#axes path {
-					stroke-width: 5;
-					stroke: white;
-					visibility: hidden;
-				}
-				#map:hover #axes path {
-					visibility: visible;
-				}
-				
-				#board #zoomer {
+  <head profile='http://gmpg.org/xfn/11'>
+    <meta http-equiv='Content-Type' content='application/xhtml+xml;charset=utf-8'/>
+    <title>Game Board test file v4</title>
+    <link rel='copyright' href='http://creativecommons.org/licenses/by-nc-sa/3.0/' type='text/html;charset=utf-8' />
+    <!-- <link rel='stylesheet' href='http://files.elliottcable.name/SASS/compiled/mini.css' type='text/css;charset=utf-8' /> -->
+    <style tyle="text/css" id="hardcoded">
+      <![CDATA[
+        * {
+          margin: 0;
+          padding: 0;
+        }
+        html, body {
+          height: 100%;
+        }
+        html {
+          background: #000000;
+          color: #FFFFFF;
+        }
+        body {
+          position: relative;
+          display: table;
+           margin: 0 auto;
+           vertical-align: middle;
+        }
+        #everything {
+          width: 50em;
+          display: table-cell;
+          vertical-align: middle;
+        }
+        h1, h2, h3, h4, h5, h6 {
+          padding-top: 0.3em;
+          padding-bottom: 0.1em;
+          text-align: center;
+          font-variant: small-caps;
+          font-family: 'Hoefler Text', serif;
+          color: #AAAAAA;
+        }
+        h1 {
+          font-size: 36pt;
+        }
+        h2 {
+          font-size: 28pt;
+        }
+        #description {
+          text-align: center;
+        }
+        
+        #board {
+          margin-left: auto;
+          margin-right: auto;
+        }
+        
+        #board_border {
+          fill: none;
+          stroke: white;
+          stroke-width: 5;
+        }
+        #board_corners {
+          fill: none;
+          stroke: black;
+          stroke-width: 25;
+        }
+        
+        .map_border {
+          fill: none;
+          stroke: white;
+          stroke-width: 10;
+        }
+        
+        #axes path {
+          stroke-width: 5;
+          stroke: white;
+          visibility: hidden;
+        }
+        #map:hover #axes path {
+          visibility: visible;
+        }
+        
+        #board #zoomer {
 /*          display: none;*/
           visibility: hidden;
-				}
-				#board:hover #zoomer {
+        }
+        #board:hover #zoomer {
 /*          display: svg-g;*/
-				  visibility: visible;
-				}
-				#board #zoomer #zoomer_capsule {
-				  fill: black;
-				  fill-opacity: 0.5;
-				  stroke-width: 1.25;
-					stroke: white;
-					stroke-opacity: 0.5;
-				}
-				#board #zoomer #zoomer_handle {
-				  fill: white;
-				  fill-opacity: 0.75;
-				}
+          visibility: visible;
+        }
+        #board #zoomer #zoomer_capsule {
+          fill: black;
+          fill-opacity: 0.5;
+          stroke-width: 1.25;
+          stroke: white;
+          stroke-opacity: 0.5;
+        }
+        #board #zoomer #zoomer_handle {
+          fill: white;
+          fill-opacity: 0.75;
+        }
 
-				.tile {
-					stroke: #474747;
-					stroke-width: .25;
-				}
-				
-				.tile:hover .background {
-					opacity: 0.75;
-				}
-				
-				.player {
-				  fill: #FFFF00;
-				}
-				.player:hover {
-				  stroke: #FFFF00;
-				  stroke-width: 50;
-				}
-				
-				.tile.test .background {
-					fill: #AA0000;
-				}
-				
-				
+        .tile {
+          stroke: #474747;
+          stroke-width: .25;
+        }
+        
+        .tile:hover .background {
+          opacity: 0.75;
+        }
+        
+        .player {
+          fill: #FFFF00;
+        }
+        .player:hover {
+          stroke: #FFFF00;
+          stroke-width: 50;
+        }
+        
+        .tile.test .background {
+          fill: #AA0000;
+        }
+        
+        
         .grass .background {
           fill: #009900;
         } 
-				
-				.moss .background {
-					fill: #009933;
-				}
-				
-				.deadgrass .background {
-					fill: #4A6633;
-				}
-				
-				.forest .background {
-					fill: #115500;
-				}
-				
-				.water .background {
-					fill: #339999;
-				}
-				
-				.dirtywater .background {
-					fill: #338866;
-				}
+        
+        .moss .background {
+          fill: #009933;
+        }
+        
+        .deadgrass .background {
+          fill: #4A6633;
+        }
+        
+        .forest .background {
+          fill: #115500;
+        }
+        
+        .water .background {
+          fill: #339999;
+        }
+        
+        .dirtywater .background {
+          fill: #338866;
+        }
 
-				path.trail {
-					fill: none;
-					stroke: #665033;
-					stroke-width: 50;
-				}
-				
-				#footer ul li {
-					display: inline;
-				}
-				
-				#footer ul li:after {
-					content: ', ';
-				}
-			]]>
-		</style>
-		
+        path.trail {
+          fill: none;
+          stroke: #665033;
+          stroke-width: 50;
+        }
+        
+        #footer ul li {
+          display: inline;
+        }
+        
+        #footer ul li:after {
+          content: ', ';
+        }
+      ]]>
+    </style>
+    
     <!-- <script type='text/javascript' src='http://yui.yahooapis.com/2.4.1/build/yuiloader/yuiloader-beta-min.js'></script> -->
     <!-- <script type='text/javascript' src='pi.js'></script>
     <script type='text/javascript' src='firebug-lite.js'></script> -->
     <!-- <script type='text/javascript' src='http://jqueryjs.googlecode.com/files/jquery-1.2.6.min.js'></script> -->
     <script type='text/javascript' src='http://www.JSON.org/json2.js'></script>
-		<script type='text/javascript'>
-			<![CDATA[
-			  var SVG_NS = 'http://www.w3.org/2000/svg';
-			  var API_URI = 'http://geoffrey.elliottcable.name/api';
-			  
-				var targetObject = null;
-				
-				// =================
-				// = Some plumbing =
-				// =================
-				
-				function clearElementById(id){
-				  var element = document.getElementById(id)
-				  for (var i = element.childNodes.length - 1; i >= 0; i--){
-				    element.removeChild(element.childNodes[i])
-				  };
-				}
-				
-				function indexOf(val, array){
-				  for(var i = 0, l = array.length; i < l; i++) {
+    <script type='text/javascript'>
+      <![CDATA[
+        var SVG_NS = 'http://www.w3.org/2000/svg';
+        var API_URI = 'http://geoffrey.elliottcable.name/api';
+        
+        var targetObject = null;
+        
+        // =================
+        // = Some plumbing =
+        // =================
+        
+        function clearElementById(id){
+          var element = document.getElementById(id)
+          for (var i = element.childNodes.length - 1; i >= 0; i--){
+            element.removeChild(element.childNodes[i])
+          };
+        }
+        
+        function indexOf(val, array){
+          for(var i = 0, l = array.length; i < l; i++) {
             if(array[i] == val) return i;
           }
           return null;
-				}
-				
-				function arrayInclude(val, array){
-				  return indexOf(val, array) !== null;
-				}
-				function arrayHasValueAt(val, array){
-				  return array[val] !== 'undefined';
-				}
-				
-				// These paired functions can add a class to the list of classes
-				// on an element.
-				function addClass(element, klass){
-				  if(element.className){
-				    var classes = element.className.split(' ');
-				    classes[classes.length] = klass;
-				    element.className = classes.join(' ');
-			    } else {
-			      // Won't work for the NS version, because SVG screws with the
-			      // className in odd ways - it's not a string, nor any sort of
-			      // object I can create.
-			      element.className
-			    }
-				}
-				function addSVGClass(element, klass){
-				  if(element.className){
-				    if(element.className.baseVal){
-				      var classes = element.className.baseVal.split(' ');
-  				    classes[classes.length] = klass;
-  				    element.className.baseVal = classes.join(' '); 
-				    } else {
-				      element.className.baseVal = klass;
-				    }
-			    } else {
-			      console.error('SVG element has no existing className: ' + element)
-			      // Won't work for the NS version, because SVG screws with the
-			      // className in odd ways - it's not a string, nor any sort of
-			      // object I can create.
+        }
+        
+        function arrayInclude(val, array){
+          return indexOf(val, array) !== null;
+        }
+        function arrayHasValueAt(val, array){
+          return array[val] !== 'undefined';
+        }
+        
+        // These paired functions can add a class to the list of classes
+        // on an element.
+        function addClass(element, klass){
+          if(element.className){
+            var classes = element.className.split(' ');
+            classes[classes.length] = klass;
+            element.className = classes.join(' ');
+          } else {
+            // Won't work for the NS version, because SVG screws with the
+            // className in odd ways - it's not a string, nor any sort of
+            // object I can create.
+            element.className
+          }
+        }
+        function addSVGClass(element, klass){
+          if(element.className){
+            if(element.className.baseVal){
+              var classes = element.className.baseVal.split(' ');
+              classes[classes.length] = klass;
+              element.className.baseVal = classes.join(' '); 
+            } else {
+              element.className.baseVal = klass;
+            }
+          } else {
+            console.error('SVG element has no existing className: ' + element)
+            // Won't work for the NS version, because SVG screws with the
+            // className in odd ways - it's not a string, nor any sort of
+            // object I can create.
             // element.className
-			    }
-				}
-				
-				// http://tnlogy.blogspot.com/2008/02/innerhtml-but-for-svg.html
-				// Think innerHTML, for a SVG snippet in a string. Since we can't
-				// just paste raw string and let the browser handle it, we'll build
-				// an element ourselves. Things to note:
-				// * Parsed string's root element(s) *must* have the SVG xmlns attr!
-				// * Results of this function should be importNode'd for Safari
-				function svgSourceToNode(svgSource) {
-				  // We use "text/xml" instead of "image/svg+xml", due to FireFox.
+          }
+        }
+        
+        // http://tnlogy.blogspot.com/2008/02/innerhtml-but-for-svg.html
+        // Think innerHTML, for a SVG snippet in a string. Since we can't
+        // just paste raw string and let the browser handle it, we'll build
+        // an element ourselves. Things to note:
+        // * Parsed string's root element(s) *must* have the SVG xmlns attr!
+        // * Results of this function should be importNode'd for Safari
+        function svgSourceToNode(svgSource) {
+          // We use "text/xml" instead of "image/svg+xml", due to FireFox.
           return new DOMParser().parseFromString(svgSource, "text/xml").documentElement;
         }
-				
-				// ===============
-				// = XHR loading =
-				// ===============
-				
-				// Uses XMLHttpRequest to get a json object from a URI
-				function JSONHttpRequest(URI, onResponse, method_opt, charset_opt){
-				  var method = method_opt || 'GET';
-				  var charset = charset_opt || 'utf-8';
-				  
+        
+        // ===============
+        // = XHR loading =
+        // ===============
+        
+        // Uses XMLHttpRequest to get a json object from a URI
+        function JSONHttpRequest(URI, onResponse, method_opt, charset_opt){
+          var method = method_opt || 'GET';
+          var charset = charset_opt || 'utf-8';
+          
           var request = new XMLHttpRequest();
           request.open(method, URI, true);
           request.setRequestHeader("Content-Type", "application/json;charset=" + charset);
@@ -271,178 +271,178 @@
           }
           
           request.send(null);
-				}
-				
-				var cachedMap;
-				function switchToMap(id){
-				  int_id = parseInt(id);
-				  retrieveMap(int_id, function(map){
-				    clearElementById('tiles');
-				    cachedMap = map;
-				    writeMap(map);
-				  });
-				}
-				
-				function retrieveMap(id, onRetrieve){
-				  JSONHttpRequest(API_URI + '/map/' + id, onRetrieve);
-				}
-				
-				function writeMap(map){
-				  var xTranslate;
-				  var yTranslate;
-				  
-				  var rows = map.length;
-				  for (var row = rows - 1; row >= 0; row--){
-				    
-				    var yTranslate = (-( parseFloat(rows) / 2.0 ) + parseFloat(row)) * -100.0;
-				    var cols = map[row].length;
-				    for (var col = rows - 1; col >= 0; col--){
-				      
-				      var xTranslate = (-( parseFloat(cols) / 2.0 ) + parseFloat(col)) * -100.0;
-				      var tiles = map[row][col].length;
-				      for (var tile = tiles - 1; tile >= 0; tile--){
+        }
+        
+        var cachedMap;
+        function switchToMap(id){
+          int_id = parseInt(id);
+          retrieveMap(int_id, function(map){
+            clearElementById('tiles');
+            cachedMap = map;
+            writeMap(map);
+          });
+        }
+        
+        function retrieveMap(id, onRetrieve){
+          JSONHttpRequest(API_URI + '/map/' + id, onRetrieve);
+        }
+        
+        function writeMap(map){
+          var xTranslate;
+          var yTranslate;
+          
+          var rows = map.length;
+          for (var row = rows - 1; row >= 0; row--){
+            
+            var yTranslate = (-( parseFloat(rows) / 2.0 ) + parseFloat(row)) * -100.0;
+            var cols = map[row].length;
+            for (var col = rows - 1; col >= 0; col--){
+              
+              var xTranslate = (-( parseFloat(cols) / 2.0 ) + parseFloat(col)) * -100.0;
+              var tiles = map[row][col].length;
+              for (var tile = tiles - 1; tile >= 0; tile--){
                 // console.log(map[row][col][tile], xTranslate, yTranslate);
                 addTile(map[row][col][tile], xTranslate, yTranslate);
-				      };
-				    };
-				  };
-				}
-				
-				function addTile(id, xTranslate, yTranslate){
-				  int_id = parseInt(id);
-				  
-				  retrieveTile(int_id, function(tile){
-				    // We write the SVG here - any necessary CSS should be written by 
-				    // retrieveTile() if necessary.
-				    writeSVG(unescape(tile['svg']), document.getElementById('tiles'), ['tile', tile['name']], function(attr){
-				      attr['transform'] = 'translate(' + xTranslate + ',' + yTranslate + ')';
-  				    return attr;
-  				  });
-				  });
-				}
-				
-				// This will retrieve a tile as JSON, caching all previously requested
-				// tiles to save JHR requests. Due to the async nature of XHR and thus
-				// JHR, we can't return the tile itself - you have to pass a function
-				// to retrieveTile() documenting how you want to deal with the tile.
-				var cachedTiles = new Array();
-				function retrieveTile(id, onRetrieve){
-				  if(cachedTile == 'undefined' || cachedTile == null){
-				    
-				    // If we haven't been grabbed before, we need to add the tile to
-				    // the cache and add any relevant CSS to the page on retrieval and
-				    // then run the requested onRetrieve call once we JHR the tile.
-				    JSONHttpRequest(API_URI + '/tile/' + id, function(tile) {
-				      cachedTiles[ parseInt(tile['id']) ] = tile;
-				      writeCSS( unescape(tile['css']) );
-				      onRetrieve(tile);
-				    });
-				    
-				  } else {
-				    
-				    // If it's been cached before, no need to write the CSS - we'll
-				    // just run the call.
-				    onRetrieve( cachedTiles[parseInt(id)] );
-				    
-				  }
-				}
-				
-				function writeCSS(cssSource){
-				  var styleNode = document.createElement('style');
-				  // var innerCSS = document.createTextNodeNs(SVG_NS, cssSource); // WTF? Why not the Ns version?
-				  var innerCSS = document.createTextNode(cssSource);
-				  styleNode.setAttribute('type', 'text/css');
-				  styleNode.appendChild(document.importNode(innerCSS, true));
-				  (document.getElementsByTagName('head')[0] || document.documentElement).appendChild(styleNode);
-				}
-				
-				// importNode the parentNode to the document before running this!
-				function writeSVG(svgSource, parentNode, classes, attributesFunction){
-				  var svgNode = document.createElementNS(SVG_NS, 'g');
-				  for (var klass = classes.length - 1; klass >= 0; klass--){
-            addSVGClass(svgNode, classes[klass])
-				  };
-				  
-				  if(attributesFunction != 'undefined'){
-				    var attributes = attributesFunction(new Array());
-				    for(var attribute in attributes){
-				      svgNode.setAttributeNS(null, attribute, attributes[attribute]);
-				    };
-				  }
-				  parentNode.appendChild(svgNode);
-				  
-				  svgNode.appendChild( document.importNode(svgSourceToNode(svgSource), true) );
-				}
-				
-				// ==================
-				// = Mouse handling =
-				// ==================
-				
-				function getSvgLoc(svgElement,theEvent){
-					// Let's work some magic! (IOW, I have no idea how this works yet)
-					var matrix = svgElement.getScreenCTM();
-					var mouseX = matrix.inverse().a*theEvent.clientX+matrix.inverse().c*theEvent.clientY+matrix.inverse().e;
-					var mouseY = matrix.inverse().b*theEvent.clientX+matrix.inverse().d*theEvent.clientY+matrix.inverse().f;
-					var mouseLoc = new Array(mouseX,mouseY);
-					return mouseLoc;
-				}
+              };
+            };
+          };
+        }
         
-				function mouseHandler(theEvent){
-					if (theEvent == null) { theEvent = window.event; } 
-					var target = theEvent.target != null ? theEvent.target : theEvent.srcElement;
-					targetObject = target;
-					
-					// Let's see what was clicked. If it's a tile, then we need to (for now, at least)
-					//  just drag the parent board's viewport. If it's the zoomer, we need to zoom.
+        function addTile(id, xTranslate, yTranslate){
+          int_id = parseInt(id);
+          
+          retrieveTile(int_id, function(tile){
+            // We write the SVG here - any necessary CSS should be written by 
+            // retrieveTile() if necessary.
+            writeSVG(unescape(tile['svg']), document.getElementById('tiles'), ['tile', tile['name']], function(attr){
+              attr['transform'] = 'translate(' + xTranslate + ',' + yTranslate + ')';
+              return attr;
+            });
+          });
+        }
+        
+        // This will retrieve a tile as JSON, caching all previously requested
+        // tiles to save JHR requests. Due to the async nature of XHR and thus
+        // JHR, we can't return the tile itself - you have to pass a function
+        // to retrieveTile() documenting how you want to deal with the tile.
+        var cachedTiles = new Array();
+        function retrieveTile(id, onRetrieve){
+          if(cachedTile == 'undefined' || cachedTile == null){
+            
+            // If we haven't been grabbed before, we need to add the tile to
+            // the cache and add any relevant CSS to the page on retrieval and
+            // then run the requested onRetrieve call once we JHR the tile.
+            JSONHttpRequest(API_URI + '/tile/' + id, function(tile) {
+              cachedTiles[ parseInt(tile['id']) ] = tile;
+              writeCSS( unescape(tile['css']) );
+              onRetrieve(tile);
+            });
+            
+          } else {
+            
+            // If it's been cached before, no need to write the CSS - we'll
+            // just run the call.
+            onRetrieve( cachedTiles[parseInt(id)] );
+            
+          }
+        }
+        
+        function writeCSS(cssSource){
+          var styleNode = document.createElement('style');
+          // var innerCSS = document.createTextNodeNs(SVG_NS, cssSource); // WTF? Why not the Ns version?
+          var innerCSS = document.createTextNode(cssSource);
+          styleNode.setAttribute('type', 'text/css');
+          styleNode.appendChild(document.importNode(innerCSS, true));
+          (document.getElementsByTagName('head')[0] || document.documentElement).appendChild(styleNode);
+        }
+        
+        // importNode the parentNode to the document before running this!
+        function writeSVG(svgSource, parentNode, classes, attributesFunction){
+          var svgNode = document.createElementNS(SVG_NS, 'g');
+          for (var klass = classes.length - 1; klass >= 0; klass--){
+            addSVGClass(svgNode, classes[klass])
+          };
+          
+          if(attributesFunction != 'undefined'){
+            var attributes = attributesFunction(new Array());
+            for(var attribute in attributes){
+              svgNode.setAttributeNS(null, attribute, attributes[attribute]);
+            };
+          }
+          parentNode.appendChild(svgNode);
+          
+          svgNode.appendChild( document.importNode(svgSourceToNode(svgSource), true) );
+        }
+        
+        // ==================
+        // = Mouse handling =
+        // ==================
+        
+        function getSvgLoc(svgElement,theEvent){
+          // Let's work some magic! (IOW, I have no idea how this works yet)
+          var matrix = svgElement.getScreenCTM();
+          var mouseX = matrix.inverse().a*theEvent.clientX+matrix.inverse().c*theEvent.clientY+matrix.inverse().e;
+          var mouseY = matrix.inverse().b*theEvent.clientX+matrix.inverse().d*theEvent.clientY+matrix.inverse().f;
+          var mouseLoc = new Array(mouseX,mouseY);
+          return mouseLoc;
+        }
+        
+        function mouseHandler(theEvent){
+          if (theEvent == null) { theEvent = window.event; } 
+          var target = theEvent.target != null ? theEvent.target : theEvent.srcElement;
+          targetObject = target;
+          
+          // Let's see what was clicked. If it's a tile, then we need to (for now, at least)
+          //  just drag the parent board's viewport. If it's the zoomer, we need to zoom.
           //parentNode = target.parentNode
           parentNode = target;
-					while (parentNode) { // fail out if we've reached the document (document.parentNode == null)
-					  
-					  
-					  if (parentNode != document) { // Deal with the zoomer
-					    var klass = parentNode.getAttribute("class")
-  					  if (parentNode.id === 'zoomer') {
-  					    console.info('you clicked the zoomer! You win one hundered pesos.');
-  					    map = document.getElementById('map')
-  					    board = document.getElementById('board')
-  					    handle = document.getElementById('zoomer_handle')
-  					    
-  					    mapZoomOK = true;
-  					    mapStartViewBox = map.getAttribute('viewBox').split(' ').map(function(str){return parseInt(str);});
-  					    // WHY DO I HAVE TO DO THIS!!!!!!!!!!!?!?!?!?
-  					    mapViewBox = new Array(4);
-  					    mapViewBox = mapStartViewBox.join(' ');
-  					    mapViewBox = mapViewBox.split(' ').map(function(str){return parseInt(str);});
-  					    mapZoomerStartMouseLoc = getSvgLoc(board,theEvent);
-  					    
-  					    mapZoomerStartWidth = parseInt(handle.getAttribute('width'));
-  					    
-  					    document.onmousemove = mapZoomMouseMoveHandler;
+          while (parentNode) { // fail out if we've reached the document (document.parentNode == null)
+            
+            
+            if (parentNode != document) { // Deal with the zoomer
+              var klass = parentNode.getAttribute("class")
+              if (parentNode.id === 'zoomer') {
+                console.info('you clicked the zoomer! You win one hundered pesos.');
+                map = document.getElementById('map')
+                board = document.getElementById('board')
+                handle = document.getElementById('zoomer_handle')
+                
+                mapZoomOK = true;
+                mapStartViewBox = map.getAttribute('viewBox').split(' ').map(function(str){return parseInt(str);});
+                // WHY DO I HAVE TO DO THIS!!!!!!!!!!!?!?!?!?
+                mapViewBox = new Array(4);
+                mapViewBox = mapStartViewBox.join(' ');
+                mapViewBox = mapViewBox.split(' ').map(function(str){return parseInt(str);});
+                mapZoomerStartMouseLoc = getSvgLoc(board,theEvent);
+                
+                mapZoomerStartWidth = parseInt(handle.getAttribute('width'));
+                
+                document.onmousemove = mapZoomMouseMoveHandler;
                 document.onmouseup = mouseCleanupHandler;
-  					  
-  					  
-  				    } else if ((klass) && klass.match('tile')) { // Deal with the dragging
-  				      if (debug) { deubgMouseHandler(theEvent); }
-  				      
+              
+              
+              } else if ((klass) && klass.match('tile')) { // Deal with the dragging
+                if (debug) { deubgMouseHandler(theEvent); }
+                
                 map = document.getElementById('map');
                 mapDragOK = true;
             
                 mapStartViewBox = map.getAttribute('viewBox').split(' ').map(function(str){return parseInt(str);});
                 // WHY DO I HAVE TO DO THIS!!!!!!!!!!!?!?!?!?
-  					    mapViewBox = mapStartViewBox;
+                mapViewBox = mapStartViewBox;
                 mapDragStartMouseLoc = getSvgLoc(map,theEvent);
             
                 document.onmousemove = mapDragMouseMoveHandler;
                 document.onmouseup = mouseCleanupHandler;
                 
-  						} // if/else if
-  						parentNode = parentNode.parentNode;
-  					} else {
-  					  parentNode = null;
-  					}; // if parentNode != document
-					}; // while
-				}; // function mouseHandler
-				
+              } // if/else if
+              parentNode = parentNode.parentNode;
+            } else {
+              parentNode = null;
+            }; // if parentNode != document
+          }; // while
+        }; // function mouseHandler
+        
         function deubgMouseHandler(theEvent){
           if (theEvent == null) { theEvent = window.event }
           var parentNode = theEvent.target // not setting to parentNode yet, we want to test actual target too
@@ -460,30 +460,30 @@
             parentNode = parentNode.parentNode
           } // while parentNode
         } // function deubgMoseMoveHandler
-				
-				function mapZoomMouseMoveHandler(theEvent){
-				  console.log('zooming')
-					if (theEvent == null) { theEvent = window.event }; 
-					if (theEvent.button <= 1 && mapZoomOK){
-						var mapZoomerMouseLoc = getSvgLoc(board,theEvent)
-						
-						// mapZoomerMoveDistance = mouseX - startX
-						var mapZoomerAbsoluteMoveDistance = mapZoomerMouseLoc[0] - mapZoomerStartMouseLoc[0]
-						mapZoomerDistance = Math.abs((mapZoomerMouseLoc[0] / 4) - 50)
-						
-						mapZoomerStartWidth
-						mapZoomerStartDistance = mapZoomerStartWidth / 2
-						mapZoomerDistanceDelta = mapZoomerDistance - mapZoomerStartDistance
-						
-						mapZoomerPercentDelta = (100 - mapZoomerDistanceDelta) / 100
-						mapStartVisibleTiles = mapStartViewBox[2] / 100
-						mapStartPercentageOverSlide = mapStartVisibleTiles / 10
-						
-						
-						if (mapZoomerDistance > 5 && mapZoomerDistance < 38) {
-						  handle.setAttribute('x', (50 - mapZoomerDistance) + '%')
-  						handle.setAttribute('width', (mapZoomerDistance * 2) + '%')
-  						
+        
+        function mapZoomMouseMoveHandler(theEvent){
+          console.log('zooming')
+          if (theEvent == null) { theEvent = window.event }; 
+          if (theEvent.button <= 1 && mapZoomOK){
+            var mapZoomerMouseLoc = getSvgLoc(board,theEvent)
+            
+            // mapZoomerMoveDistance = mouseX - startX
+            var mapZoomerAbsoluteMoveDistance = mapZoomerMouseLoc[0] - mapZoomerStartMouseLoc[0]
+            mapZoomerDistance = Math.abs((mapZoomerMouseLoc[0] / 4) - 50)
+            
+            mapZoomerStartWidth
+            mapZoomerStartDistance = mapZoomerStartWidth / 2
+            mapZoomerDistanceDelta = mapZoomerDistance - mapZoomerStartDistance
+            
+            mapZoomerPercentDelta = (100 - mapZoomerDistanceDelta) / 100
+            mapStartVisibleTiles = mapStartViewBox[2] / 100
+            mapStartPercentageOverSlide = mapStartVisibleTiles / 10
+            
+            
+            if (mapZoomerDistance > 5 && mapZoomerDistance < 38) {
+              handle.setAttribute('x', (50 - mapZoomerDistance) + '%')
+              handle.setAttribute('width', (mapZoomerDistance * 2) + '%')
+              
               // mapViewBox = mapStartViewBox
               // WHY DOES THIS NOT ALIGN TO THE TILES!!!!!1!!1!!!?!?
               mapViewBox[2] = mapStartViewBox[2] * mapZoomerPercentDelta // X width
@@ -492,84 +492,84 @@
               mapViewBox[1] = mapStartViewBox[1] + (mapStartViewBox[2] - mapViewBox[2]) / 2 // Y start
               
               map.setAttribute('viewBox',mapViewBox.join(' '))
-  					}
-  					console.log(((100 - mapZoomerDistanceDelta) / 100), mapViewBox)
-						
+            }
+            console.log(((100 - mapZoomerDistanceDelta) / 100), mapViewBox)
+            
             // mapViewBox[0] = mapStartViewBox[0] - mapZoomerMoveDistance[0]
             // mapViewBox[1] = mapStartViewBox[1] - mapZoomerMoveDistance[1]
-						
+            
             // map.setAttribute('viewBox',mapViewBox.join(' '))
-					}
-					return false;
-				}
-				
-				function mapDragMouseMoveHandler(theEvent){
-				  console.log('dragging')
-					if (theEvent == null) { theEvent = window.event } 
-					if (theEvent.button <= 1 && mapDragOK){
-						var mapDragMouseLoc = getSvgLoc(map,theEvent)
-						
-						// viewBox[0] = mouseX - startX
-						// viewBox[1] = mouseY - startY
-						var mapDragDistance = new Array(2)
-						mapDragDistance[0] = mapDragMouseLoc[0] - mapDragStartMouseLoc[0]
-						mapDragDistance[1] = mapDragMouseLoc[1] - mapDragStartMouseLoc[1]
-						
-						mapViewBox[0] = mapStartViewBox[0] - mapDragDistance[0]
-						mapViewBox[1] = mapStartViewBox[1] - mapDragDistance[1]
-						
-						map.setAttribute('viewBox',mapViewBox.join(' '))
-					}
-					return false;
-				}
+          }
+          return false;
+        }
         
-				function mouseCleanupHandler(theEvent){
-			    document.onmousemove=null;
-					document.onmouseup=null;
-					mapDragOK = false;
-					mapZoomOK = false;
-				}
+        function mapDragMouseMoveHandler(theEvent){
+          console.log('dragging')
+          if (theEvent == null) { theEvent = window.event } 
+          if (theEvent.button <= 1 && mapDragOK){
+            var mapDragMouseLoc = getSvgLoc(map,theEvent)
+            
+            // viewBox[0] = mouseX - startX
+            // viewBox[1] = mouseY - startY
+            var mapDragDistance = new Array(2)
+            mapDragDistance[0] = mapDragMouseLoc[0] - mapDragStartMouseLoc[0]
+            mapDragDistance[1] = mapDragMouseLoc[1] - mapDragStartMouseLoc[1]
+            
+            mapViewBox[0] = mapStartViewBox[0] - mapDragDistance[0]
+            mapViewBox[1] = mapStartViewBox[1] - mapDragDistance[1]
+            
+            map.setAttribute('viewBox',mapViewBox.join(' '))
+          }
+          return false;
+        }
+        
+        function mouseCleanupHandler(theEvent){
+          document.onmousemove=null;
+          document.onmouseup=null;
+          mapDragOK = false;
+          mapZoomOK = false;
+        }
         
         var mapZoomOK = false;
         var mapDragOK = false;
         var debug = true;
         var pastPosition = null;
-				document.onmousedown=mouseHandler;
+        document.onmousedown=mouseHandler;
         mouseCleanupHandler(null);
-			]]>
-		</script>
-	</head>
-	<body>
-		<div id='everything'>
-		  <!-- Other HTML here -->
-		  
-			<svg id='board' viewBox='0 0 400 400' width='50em' height='50em' zoomAndPan='disable' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>
-				<svg id='map' viewBox='-1000 -1000 2000 2000' width='100%' height='100%' zoomAndPan='disable' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>
-				  <desc>game board and play map</desc>
-					<g id="tiles">
-					  <g class="test tile" transform="translate(-300,-300)" id="tile:-1.-1">
-					    <rect x="0" y="0" width="100" height="100" class="background"/>
-					  </g>
-				  </g>
+      ]]>
+    </script>
+  </head>
+  <body>
+    <div id='everything'>
+      <!-- Other HTML here -->
+      
+      <svg id='board' viewBox='0 0 400 400' width='50em' height='50em' zoomAndPan='disable' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>
+        <svg id='map' viewBox='-1000 -1000 2000 2000' width='100%' height='100%' zoomAndPan='disable' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>
+          <desc>game board and play map</desc>
+          <g id="tiles">
+            <g class="test tile" transform="translate(-300,-300)" id="tile:-1.-1">
+              <rect x="0" y="0" width="100" height="100" class="background"/>
+            </g>
+          </g>
 
-					<rect class='map_border' x='-3500' y='-3500' width='7000' height='7000'/>
-					<g id='axes'>
-						<path id='x' d='M -3500,0 L 3500,0'/><path id='y' d='M 0,-3500 L 0,3500'/>
-					</g>
-				</svg>
-				
-				<g id='borders'>
-				  <rect id='board_border' x='2.5%' y='2.5%' rx='30' ry='30' width='95%' height='95%'/>
-  				<rect id='board_corners' x='-2.5%' y='-2.5%' rx='50' ry='50' width='105%' height='105%'/>
-  			</g>
-				
-				<g id='zoomer'>
+          <rect class='map_border' x='-3500' y='-3500' width='7000' height='7000'/>
+          <g id='axes'>
+            <path id='x' d='M -3500,0 L 3500,0'/><path id='y' d='M 0,-3500 L 0,3500'/>
+          </g>
+        </svg>
+        
+        <g id='borders'>
+          <rect id='board_border' x='2.5%' y='2.5%' rx='30' ry='30' width='95%' height='95%'/>
+          <rect id='board_corners' x='-2.5%' y='-2.5%' rx='50' ry='50' width='105%' height='105%'/>
+        </g>
+        
+        <g id='zoomer'>
           <rect id='zoomer_capsule' x='10%' y='5%' rx='2%' ry='100%' width='80%' height='3.5%'/>
           <rect id='zoomer_handle' x='25%' y='5%' rx='2%' ry='100%' width='50%' height='3.5%'/>
-			  </g>
-			</svg>
-			
-			<!-- Other HTML here -->
-		</div>
-	</body>
+        </g>
+      </svg>
+      
+      <!-- Other HTML here -->
+    </div>
+  </body>
 </html>
