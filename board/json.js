@@ -2,7 +2,8 @@
     http://www.JSON.org/json2.js
     2008-07-15
 
-    Public Domain.
+    Public Domain. Some slight modifications (to shut up FireFox's warnings)
+    by elliott cable.
 
     NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
 
@@ -160,7 +161,7 @@ if (!this.JSON) {
 // Create a JSON object only if one does not already exist. We create the
 // object in a closure to avoid creating global variables.
 
-    JSON = function () {
+    var JSON = function () {
 
         function f(n) {
             // Format integers to have at least two digits.
@@ -345,6 +346,7 @@ if (!this.JSON) {
                 gap = mind;
                 return v;
             }
+            return nil;
         }
 
 // Return the JSON object containing the stringify and parse methods.
