@@ -72,8 +72,8 @@ class Tile
 end
 
 Tile.new :null # Tile of ID 0 should always be an empty tile named 'null'
-Tile.new :grass do |tile|
-  tile.style = ".background { fill: #009900; }"
+Tile.new :test do |tile|
+  tile.style = ".background { fill: #00CC00; }"
 end
 
 EmptyMap = []
