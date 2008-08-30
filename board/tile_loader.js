@@ -39,11 +39,11 @@ function writeMap(map) {
   var rows = map.length;
   for (var row = rows - 1; row >= 0; row--) {
     
-    var yTranslate = (-( parseFloat(rows) / 2.0 ) + parseFloat(row)) * -100.0;
+    var yTranslate = (-( parseFloat(rows) / 2.0 ) + parseFloat(row) + 1) * -100.0;
     var cols = map[row].length;
     for (var col = rows - 1; col >= 0; col--) {
       
-      var xTranslate = (-( parseFloat(cols) / 2.0 ) + parseFloat(col)) * -100.0;
+      var xTranslate = (-( parseFloat(cols) / 2.0 ) + parseFloat(col) + 1) * -100.0;
       var tiles = map[row][col].length;
       for (var tile = tiles - 1; tile >= 0; tile--) {
         // console.log(map[row][col][tile], xTranslate, yTranslate);
