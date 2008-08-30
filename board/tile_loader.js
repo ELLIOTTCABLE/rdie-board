@@ -20,8 +20,8 @@ function JSONHttpRequest(URI, onResponse, method_opt, charset_opt) {
 
 var cachedMap;
 function switchToMap(id) {
-  int_id = parseInt(id);
-  retrieveMap(int_id, function(map) {
+  var mapId = parseInt(id);
+  retrieveMap(mapId, function(map) {
     clearElementById('tiles');
     cachedMap = map;
     writeMap(map);
