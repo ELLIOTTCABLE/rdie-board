@@ -308,39 +308,43 @@
 				  };
 				}
 				
-				var cachedTiles = new Array();
 				function addTile(id, xTranslate, yTranslate){
 				  int_id = parseInt(id);
+				  
 				  retrieveTile(int_id, function(tile){
-				    writeTile(tile, xTranslate, yTranslate);
-				  });
-				}
-				
-				function retrieveTile(id, onRetrieve){
-				  var cachedTile = cachedTiles[parseInt(id)]
-				  if(cachedTile == 'undefined' || cachedTile == null){
-				    JSONHttpRequest(API_URI + '/tile/' + id, onRetrieve);
-				  } else {
-				    onRetrieve(cachedTiles[parseInt(id)]);
-				  }
-				}
-				
-				// Move the CSS writing / cache checking bit of this to retrieveTile
-				// (all retrieved tiles should have their CSS inserted into the page,
-				// written as SVG yet or not), and move the SVG specifics to writeSVG.
-				// Also, from whence comes the syntax error!?!?
-				function writeTile(tile, xTranslate, yTranslate){
-				  var cachedTile = cachedTiles[parseInt(tile['id'])];
-				  if(cachedTile == 'undefined' || cachedTile == null){
-				    cachedTiles[ parseInt(tile['id']) ] = tile;
-				    writeCSS(unescape(tile['css']));
-				  }
-				  writeSVG(unescape(tile['svg']), document.getElementById('tiles'),
-				    ['tile', tile['name']],
-				    function(attr){
-				      attr['transform'] = 'translate(' + parseInt(xTranslate) + ',' + parseInt(yTranslate) + ')';
+				    // We write the SVG here - any necessary CSS should be written by 
+				    // retrieveTile() if necessary.
+				    writeSVG(unescape(tile['svg']), document.getElementById('tiles'), ['tile', tile['name']], function(attr){
+				      attr['transform'] = 'translate(' + xTranslate + ',' + yTranslate + ')';
   				    return attr;
+  				  });
 				  });
+				}
+				
+				// This will retrieve a tile as JSON, caching all previously requested
+				// tiles to save JHR requests. Due to the async nature of XHR and thus
+				// JHR, we can't return the tile itself - you have to pass a function
+				// to retrieveTile() documenting how you want to deal with the tile.
+				var cachedTiles = new Array();
+				function retrieveTile(id, onRetrieve){
+				  if(cachedTile == 'undefined' || cachedTile == null){
+				    
+				    // If we haven't been grabbed before, we need to add the tile to
+				    // the cache and add any relevant CSS to the page on retrieval and
+				    // then run the requested onRetrieve call once we JHR the tile.
+				    JSONHttpRequest(API_URI + '/tile/' + id, function(tile) {
+				      cachedTiles[ parseInt(tile['id']) ] = tile;
+				      writeCSS( unescape(tile['css']) );
+				      onRetrieve(tile);
+				    });
+				    
+				  } else {
+				    
+				    // If it's been cached before, no need to write the CSS - we'll
+				    // just run the call.
+				    onRetrieve( cachedTiles[parseInt(id)] );
+				    
+				  }
 				}
 				
 				function writeCSS(cssSource){
@@ -352,13 +356,12 @@
 				  (document.getElementsByTagName('head')[0] || document.documentElement).appendChild(styleNode);
 				}
 				
-				// importNode the parentNode before running this!
+				// importNode the parentNode to the document before running this!
 				function writeSVG(svgSource, parentNode, classes, attributesFunction){
 				  var svgNode = document.createElementNS(SVG_NS, 'g');
 				  for (var klass = classes.length - 1; klass >= 0; klass--){
-            // addSVGClass(svgNode, classes[klass])
+            addSVGClass(svgNode, classes[klass])
 				  };
-				  svgNode.className.baseVal = 'tile grass'
 				  
 				  if(attributesFunction != 'undefined'){
 				    var attributes = attributesFunction(new Array());
@@ -368,7 +371,7 @@
 				  }
 				  parentNode.appendChild(svgNode);
 				  
-				  svgNode.appendChild(document.importNode(svgSourceToNode(svgSource), true));
+				  svgNode.appendChild( document.importNode(svgSourceToNode(svgSource), true) );
 				}
 				
 				// ==================
