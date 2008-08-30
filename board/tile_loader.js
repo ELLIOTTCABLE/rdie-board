@@ -72,8 +72,9 @@ function addTile(id, xTranslate, yTranslate) {
 // 
 // Returnes the tile if it's already cached, true if it's already been queued,
 // and false if this is the first time it's been requested.
+// TODO: Figure out why this particular function runs so slow!
 var queuedTiles = new Array();
-function queueHookForTile (id, hook) {
+function queueHookForTile(id, hook) {
   var tileId = parseInt(id)
   // If we've already got the tile, just run the hook on it now.
   var cachedTile = cachedTiles[tileId];
@@ -95,12 +96,16 @@ function queueHookForTile (id, hook) {
   queuedTiles[tileId] = new Array();
   queuedTiles[tileId].push(hook);
   retrieveTile( tileId, function(tile) {
-    for (var i = queuedTiles[tileId].length - 1; i >= 0; i--){
-      queuedTiles[tileId][i](tile);
-    };
+    runHooksForTile(tileId, tile);
   });
   
   return false;
+}
+
+function runHooksForTile(tileId, tile) {
+  for (var i = queuedTiles[tileId].length - 1; i >= 0; i--){
+    queuedTiles[tileId][i](tile);
+  };
 }
 
 // This will retrieve a tile as JSON, caching all previously requested
