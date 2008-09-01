@@ -1,164 +1,13 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN' 'http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd'>
+<!DOCTYPE html PUBLIC
+    '-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN'
+    'http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg-flat.dtd'>
 <html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en'>
   <head profile='http://gmpg.org/xfn/11'>
     <meta http-equiv='Content-Type' content='application/xhtml+xml;charset=utf-8'/>
     <title>RDie Board Example</title>
-    <link rel='copyright' href='http://creativecommons.org/licenses/by-nc-sa/3.0/' type='text/html;charset=utf-8' />
-    <style tyle="text/css" id="hardcoded">
-      <![CDATA[
-        * {
-          margin: 0;
-          padding: 0;
-        }
-        html, body {
-          height: 100%;
-        }
-        html {
-          background: #000000;
-          color: #FFFFFF;
-        }
-        body {
-          position: relative;
-          display: table;
-           margin: 0 auto;
-           vertical-align: middle;
-        }
-        #everything {
-          width: 50em;
-          display: table-cell;
-          vertical-align: middle;
-        }
-        h1, h2, h3, h4, h5, h6 {
-          padding-top: 0.3em;
-          padding-bottom: 0.1em;
-          text-align: center;
-          font-variant: small-caps;
-          font-family: 'Hoefler Text', serif;
-          color: #AAAAAA;
-        }
-        h1 {
-          font-size: 36pt;
-        }
-        h2 {
-          font-size: 28pt;
-        }
-        #description {
-          text-align: center;
-        }
-        
-        #board {
-          margin-left: auto;
-          margin-right: auto;
-        }
-        
-        #board_border {
-          fill: none;
-          stroke: white;
-          stroke-width: 5;
-        }
-        #board_corners {
-          fill: none;
-          stroke: black;
-          stroke-width: 25;
-        }
-        
-        .map_border {
-          fill: none;
-          stroke: white;
-          stroke-width: 10;
-        }
-        
-        #axes path {
-          stroke-width: 5;
-          stroke: white;
-          visibility: hidden;
-        }
-        #map:hover #axes path {
-          visibility: visible;
-        }
-        
-        #board #zoomer {
-/*          display: none;*/
-          visibility: hidden;
-        }
-        #board:hover #zoomer {
-/*          display: svg-g;*/
-          visibility: visible;
-        }
-        #board #zoomer #zoomer_capsule {
-          fill: black;
-          fill-opacity: 0.5;
-          stroke-width: 1.25;
-          stroke: white;
-          stroke-opacity: 0.5;
-        }
-        #board #zoomer #zoomer_handle {
-          fill: white;
-          fill-opacity: 0.75;
-        }
-
-        .tile {
-          stroke: #474747;
-          stroke-width: .25;
-        }
-        
-        .tile:hover .background {
-          opacity: 0.75;
-        }
-        
-        .player {
-          fill: #FFFF00;
-        }
-        .player:hover {
-          stroke: #FFFF00;
-          stroke-width: 50;
-        }
-        
-        .tile.test .background {
-          fill: #FF0000;
-        }
-        
-        
-        .grass .background {
-          fill: #009900;
-        } 
-        
-        .moss .background {
-          fill: #009933;
-        }
-        
-        .deadgrass .background {
-          fill: #4A6633;
-        }
-        
-        .forest .background {
-          fill: #115500;
-        }
-        
-        .water .background {
-          fill: #339999;
-        }
-        
-        .dirtywater .background {
-          fill: #338866;
-        }
-
-        path.trail {
-          fill: none;
-          stroke: #665033;
-          stroke-width: 50;
-        }
-        
-        #footer ul li {
-          display: inline;
-        }
-        
-        #footer ul li:after {
-          content: ', ';
-        }
-      ]]>
-    </style>
+    <link rel='copyright' href='http://creativecommons.org/licenses/by-nc-sa/3.0/' type='text/html;charset=utf-8'/>
+    <link rel='stylesheet' type='text/css' href='main.css'/>
     
     <script type='text/javascript'>
       <![CDATA[
@@ -177,9 +26,9 @@
       <svg id='board' viewBox='0 0 400 400' width='50em' height='50em' zoomAndPan='disable' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>
         <svg onload='switchToMap(1)' id='map' viewBox='-1000 -1000 2000 2000' width='100%' height='100%' zoomAndPan='disable' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>
           <desc>RDie Board Example</desc>
-          <g id="tiles">
-            <g class="test tile" transform="translate(-300,-300)" id="tile:-1.-1">
-              <rect x="0" y="0" width="100" height="100" class="background"/>
+          <g id='tiles'>
+            <g class='test tile' transform='translate(-300,-300)' id='tile:-1.-1'>
+              <rect x='0' y='0' width='100' height='100' class='background'/>
             </g>
           </g>
 

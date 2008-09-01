@@ -9,28 +9,8 @@
   <desc>RDie Board Debugging File</desc>
   
   <meta http-equiv='Content-Type' content='image/svg+xml;charset=utf-8'/>
-  <link rel='copyright' href='http://creativecommons.org/licenses/by-nc-sa/3.0/' type='text/html;charset=utf-8' />
-  <style tyle="text/css" id="hardcoded">
-    <![CDATA[
-      * {
-        margin: 0;
-        padding: 0;
-      }
-      svg {
-        height: 100%;
-        background: #000000;
-      }
-
-      .tile {
-        stroke: #474747;
-        stroke-width: .25;
-      }
-      
-      .tile .background {
-        fill: #009900;
-      }
-    ]]>
-  </style>
+  <link rel='copyright' href='http://creativecommons.org/licenses/by-nc-sa/3.0/' type='text/html;charset=utf-8'/>
+  <link rel='stylesheet' type='text/css' href='main.css'/>
   
   <script type="text/javascript">
     <![CDATA[
