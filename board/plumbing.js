@@ -1,8 +1,12 @@
 function clearElementById(id){
   var element = document.getElementById(id)
   for (var i = element.childNodes.length - 1; i >= 0; i--){
-    element.removeChild(element.childNodes[i])
+    removeElement(element.childNodes[i]);
   };
+}
+
+function removeElement(element){
+  element.parentNode.removeChild(element);
 }
 
 function indexOf(val, array){
