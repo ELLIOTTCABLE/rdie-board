@@ -6,8 +6,9 @@
   xmlns:ev='http://www.w3.org/2001/xml-events'
   baseProfile='full http://gmpg.org/xfn/11'
   onload='init()' debug='true'>
+  <desc>RDie Board Debugging File</desc>
   
-  <meta http-equiv='Content-Type' content='application/xhtml+xml;charset=utf-8'/>
+  <meta http-equiv='Content-Type' content='image/svg+xml;charset=utf-8'/>
   <link rel='copyright' href='http://creativecommons.org/licenses/by-nc-sa/3.0/' type='text/html;charset=utf-8' />
   <style tyle="text/css" id="hardcoded">
     <![CDATA[
@@ -31,7 +32,6 @@
     ]]>
   </style>
   
-  <script type='text/javascript' src='http://jqueryjs.googlecode.com/files/jquery-1.2.6.min.js'></script>
   <script type="text/javascript">
     <![CDATA[
       // var svgNs = document.documentElement.getAttributeNS('http://www.w3.org/2000/svg', 'xmlns');
