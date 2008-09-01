@@ -118,22 +118,6 @@ function retrieveTile(id, onRetrieve) {
   });
 }
 
-// Returns the <g> object representing one 'grid tile', so actual graphical
-// tiles can be added to it.
-function gridNode(x, y) {
-  var gNode = document.getElementById('tile:' + x + '.' + y);
-  if(!gNode) {
-    gNode = document.importNode( document.createElementNS(SVG_NS, 'g'), true );
-    addSVGClass(gNode, 'tile');
-    gNode.setAttributeNS(null, 'transform', 'translate('+(x * 100)+','+(y * 100)+')');
-    gNode.setAttributeNS(null, 'id', 'tile:'+x+'.'+y);
-    
-    document.getElementById('tiles').appendChild(gNode)
-  }
-  
-  return gNode;
-}
-
 function writeCSS(cssSource) {
   var styleNode = document.createElement('style');
   // var innerCSS = document.createTextNodeNs(SVG_NS, cssSource); // WTF? Why not the Ns version?
@@ -148,7 +132,29 @@ function writeSVG(svgSource, parentNode) {
   parentNode.appendChild( document.importNode(svgNode, true) );
 }
 
-function removeTile(x, y) {
-  var gNode = gridNode(x, y);
-  gNode.parentNode.removeChild(gNode);
+// Returns the <g> object representing one 'grid tile', so actual graphical
+// tiles can be added to it. Creates said tile if necessary.
+function gridNode(x, y) {
+  var gNode = findGridNode(x, y);
+  if(!gNode) {
+    gNode = document.importNode( document.createElementNS(SVG_NS, 'g'), true );
+    addSVGClass(gNode, 'tile');
+    gNode.setAttributeNS(null, 'transform', 'translate('+(x * 100)+','+(y * 100)+')');
+    gNode.setAttributeNS(null, 'id', 'tile:'+x+'.'+y);
+    
+    document.getElementById('tiles').appendChild(gNode)
+  }
+  
+  return gNode;
+}
+
+function findGridNode(x, y) {
+  document.getElementById('tile:' + x + '.' + y);
+}
+
+function removeGridNode(x, y) {
+  var gNode = findGridNode(x, y)
+  if(gNode) {
+    removeElement(gNode);
+  }
 }
