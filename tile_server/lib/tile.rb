@@ -1,25 +1,20 @@
-%w[rubygems halcyon hpricot css_parser].each {|dep| require dep }
-
-Halcyon.config.use {|c| c[:allow_from] = :all ; c[:environment] = :development }
-Halcyon::Application.route do |r|
-  
-  # Could use :controller, but I wanted to be semantic - /api is the API
-  # server 'root', because that's the path that the webserver proxies to the
-  # API server's port. However, 'api' is the replacement for 'Application' as
-  # the default controller.
-  r.match('/api/:action/:id').to  :controller => 'api'
-  r.match('/api/:action/').to     :controller => 'api'
-  r.match('/api/:action').to      :controller => 'api'
-  r.match('/api/').to             :controller => 'api'
-  r.match('/api').to              :controller => 'api'
-
-end
-
-
 class Tile
   TileBackground = "<rect x='0' y='0' width='100' height='100' class='background'/>"
   
   Tiles = []
+  
+  def self.[] id
+    # if id.respond_to? :to_int # Symbols respond to to_int. WTF!
+    if id.is_a? Numeric
+      Tiles[id]
+    # elsif id.respond_to? :to_str # Unfortunately, Symbol being stupid again.
+    elsif id.respond_to? :to_s
+      Tiles.select{|i| i.name == id }.first
+    else
+      nil
+    end
+  end
+  
   attr_reader :name
   attr_accessor :css
   # Custom defined, due to the fact we need to push the name in front of each
@@ -73,34 +68,8 @@ end
 
 Tile.new :null # Tile of ID 0 should always be an empty tile named 'null'
 Tile.new :test do |tile|
-  tile.css = ".background { fill: #00AA00; }"
+  tile.css = ".background { fill: #FF0000; } .background:hover { fill: #00FF00; }"
 end
 Tile.new :grass do |tile|
   tile.css = ".background { fill: #009900; }"
 end
-
-TestMap = []
-arr = []
-20.times {arr << [2]}
-20.times {TestMap << arr}
-
-class Api < Halcyon::Controller
-  
-  def tile
-    unless params[:id].nil?
-      return not_found unless tile = Tile::Tiles[params[:id].to_i]
-      ok tile.to_h
-    else
-      not_found
-    end
-  end
-  
-  # Maps are three dismensional, literally - however, the Z dimensional array
-  # is just an array of tiles that are 'stacked', i.e., rendered in the same
-  # position (given by the position in the two parent arrays)
-  def map
-    ok TestMap
-  end
-  
-end
-Application = Api # Satisfy Halcyon
