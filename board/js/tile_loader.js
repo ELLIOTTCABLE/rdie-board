@@ -80,7 +80,7 @@ function queueHookForTile(id, hook) {
     return cachedTile;
   }
   
-  // If it's not retreived yet, but it's been requested, add our hook to the
+  // If it's not retreived yet, but it's been queued, add our hook to the
   // queue
   var tileQueue = queuedTiles[tileId];
   if(tileQueue != 'undefined' && tileQueue != null) {
@@ -113,7 +113,7 @@ var cachedTiles = new Array();
 function retrieveTile(id, onRetrieve) {
   JSONHttpRequest(API_URI + '/tile/' + id, function(tile) {
     cachedTiles[ parseInt(tile['id']) ] = tile;
-    writeCSS( unescape(tile['css']) );
+    if(tile['css']){ writeCSS( unescape(tile['css']) ) };
     onRetrieve(tile);
   });
 }
