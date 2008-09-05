@@ -12,8 +12,8 @@ html {
 body {
   position: relative;
   display: table;
-   margin: 0 auto;
-   vertical-align: middle;
+  margin: 0 auto;
+  vertical-align: middle;
 }
 #everything {
   width: 50em;
