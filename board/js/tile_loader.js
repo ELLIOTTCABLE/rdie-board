@@ -18,11 +18,15 @@ function JSONHttpRequest(URI, onResponse, method_opt, charset_opt) {
 
 var cachedMap;
 function switchToMap(id) {
+  console.group('processing map ' + id);
+  console.info('queued for transfer...');
   var mapId = parseInt(id);
   retrieveMap(mapId, function(map) {
+    console.info('...received!');
     clearElementById('tiles');
     cachedMap = map;
     writeMap(map);
+    console.groupEnd();
   });
 }
 
@@ -31,6 +35,7 @@ function retrieveMap(id, onRetrieve) {
 }
 
 function writeMap(map) {
+  console.group('writing map');
   var xTranslate;
   var yTranslate;
   
@@ -44,11 +49,13 @@ function writeMap(map) {
       var xTranslate = -(-( parseFloat(cols) / 2 ) + parseFloat(col) + 1);
       var tiles = map[row][col].length;
       for (var tile = tiles - 1; tile >= 0; tile--) {
-        // console.log(map[row][col][tile], xTranslate, yTranslate);
+        console.group('writing tile '+map[row][col][tile]+' at '+xTranslate+', '+yTranslate);
         addTile(map[row][col][tile], xTranslate, yTranslate);
+        console.groupEnd();
       };
     };
   };
+  console.groupEnd();
 }
 
 // Adds a new tile to the grid. Gets the tile from the server, and prints
