@@ -62,6 +62,7 @@ function addSVGClass(element, klass){
 // * Parsed string's root element(s) *must* have the SVG xmlns attr!
 // * Results of this function should be importNode'd for WebKit
 function svgSourceToNode(svgSource) {
-  // We use "text/xml" instead of "image/svg+xml", due to FireFox.
-  return new DOMParser().parseFromString(svgSource, "text/xml").documentElement;
+  // "application/xml" - FireFox likes, and WebKit likes
+  // "image/svg+xml" - Semantic, and WebKit likes
+  return new DOMParser().parseFromString(svgSource, "application/xml").documentElement;
 }
