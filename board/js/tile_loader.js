@@ -129,7 +129,7 @@ function writeCSS(cssSource) {
 
 function writeSVG(svgSource, parentNode) {
   var svgNode = svgSourceToNode(svgSource);
-  parentNode.appendChild( document.importNode(svgNode, true) );
+  parentNode.appendChild( document.importNode(svgNode, true) ); // For WebKit
 }
 
 // Returns the <g> object representing one 'grid tile', so actual graphical
