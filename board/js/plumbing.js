@@ -1,3 +1,22 @@
+if (!window.console) window.console = {
+  log: function() {},
+  dir: function() {},
+  dirxml: function() {},
+  info: function() {},
+  warn: function() {},
+  time: function() {},
+  timeEnd: function() {},
+  error: function() {},
+  debug: function() {},
+  trace: function() {},
+  count: function() {},
+  group: function() {},
+  groupEnd: function() {},
+  assert: function() {},
+  profile: function() {},
+  profileEnd: function() {}
+};
+
 function clearElementById(id){
   var element = document.getElementById(id)
   for (var i = element.childNodes.length - 1; i >= 0; i--){
