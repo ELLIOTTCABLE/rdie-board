@@ -1,10 +1,9 @@
 var targetObject = null;
 
 function getSvgLoc(svgElement,theEvent){
-  // Let's work some magic! (IOW, I have no idea how this works yet)
-  var matrix = svgElement.getScreenCTM();
-  var mouseX = matrix.inverse().a*theEvent.clientX+matrix.inverse().c*theEvent.clientY+matrix.inverse().e;
-  var mouseY = matrix.inverse().b*theEvent.clientX+matrix.inverse().d*theEvent.clientY+matrix.inverse().f;
+  var matrix = svgElement.getScreenCTM().inverse();
+  var mouseX = matrix.a*theEvent.clientX+matrix.c*theEvent.clientY+matrix.e;
+  var mouseY = matrix.b*theEvent.clientX+matrix.d*theEvent.clientY+matrix.f;
   var mouseLoc = new Array(mouseX,mouseY);
   return mouseLoc;
 }
