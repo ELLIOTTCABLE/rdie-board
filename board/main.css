@@ -11,13 +11,11 @@ html {
 }
 body {
   position: relative;
-  display: table;
   margin: 0 auto;
   vertical-align: middle;
 }
 #everything {
   width: 50em;
-  display: table-cell;
   vertical-align: middle;
 }
 h1, h2, h3, h4, h5, h6 {
