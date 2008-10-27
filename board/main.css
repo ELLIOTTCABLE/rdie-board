@@ -12,11 +12,9 @@ html {
 body {
   position: relative;
   margin: 0 auto;
-  vertical-align: middle;
 }
 #everything {
   width: 50em;
-  vertical-align: middle;
 }
 h1, h2, h3, h4, h5, h6 {
   padding-top: 0.3em;
@@ -137,6 +135,26 @@ path.trail {
   fill: none;
   stroke: #665033;
   stroke-width: 50;
+}
+
+#switcher {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  width: 75%;
+}
+
+#switcher li {
+  display: inline-block;
+  padding: 0.25em;
+  
+  border: 1px solid #333333;
+}
+#switcher li:hover {
+  background: #FFFFFF;
+  border: 1px solid #CCCCCC;
+  color: #000000;
+  cursor: pointer;
 }
 
 #footer ul li {
