@@ -16,55 +16,76 @@ function JSONHttpRequest(URI, onResponse, method_opt, charset_opt) {
   request.send(null);
 }
 
+function retrieveMap(id, onRetrieve) {
+  JSONHttpRequest(API_URI + '/map/' + id, onRetrieve);
+}
+
 var cachedMap;
 function switchToMap(id) {
-  console.group('processing map ' + id);
+  console.info('processing map ' + id);
   console.info('queued for transfer...');
   var mapId = parseInt(id);
+  
   retrieveMap(mapId, function(map) {
     console.info('...received!');
     clearElementById('tiles');
     cachedMap = map;
     writeMap(map);
-    console.groupEnd();
   });
 }
 
-function retrieveMap(id, onRetrieve) {
-  JSONHttpRequest(API_URI + '/map/' + id, onRetrieve);
-}
-
 function writeMap(map) {
-  console.group('writing map');
+  console.log('writing map');
   var xTranslate;
   var yTranslate;
   
   var numRows = map.length;
+  var queuedRows = new Array();
   for (var rowId = numRows - 1; rowId >= 0; rowId--) {
-    
     var yTranslate = -(-( parseFloat(numRows) / 2 ) + parseFloat(rowId) + 1);
-    var numTiles = map[rowId].length;
-    for (var tileId = numTiles - 1; tileId >= 0; tileId--) {
-
-      var xTranslate = -(-( parseFloat(numTiles) / 2 ) + parseFloat(tileId) + 1);
-      var numSlices = map[rowId][tileId].length;
-      for (var sliceId = numSlices - 1; sliceId >= 0; sliceId--) {
-        console.group('writing slice '+map[rowId][tileId][sliceId]+' at '+xTranslate+', '+yTranslate);
-        addSlice(map[rowId][tileId][sliceId], xTranslate, yTranslate);
-        console.groupEnd();
-      };
-    };
+    
+    // This is necessary due to JavaScript's weird handling of scope. It
+    // returns a function that takes no arguments, but has the arguments it
+    // needs embedded into it's scope.
+    var rowWriter = (function(map, rowId, yTranslate) { return function() {
+      console.group('writing row '+ rowId);
+      writeRow(map[rowId], yTranslate);
+      console.groupEnd();
+    } })(map, rowId, yTranslate)
+    
+    queuedRows.push(rowWriter);
   };
-  console.groupEnd();
+  
+  // Each writer block will execute the next one when it's done.
+  var executeNextRowWriter = function() {
+    rowWriter = queuedRows.pop();
+    rowWriter();
+    if (queuedRows.length > 0)
+      setTimeout(executeNextRowWriter, 0);
+  }
+  
+  executeNextRowWriter();
 }
 
-// Adds a new slice to the grid. Gets the slice from the server, and prints
-// anything necessary to display it to the page.
-function addSlice(sliceId_opt, x, y) {
-  var sliceId = parseInt(sliceId_opt)
-  
+function writeRow(row, yTranslate) {
+  var numTiles = row.length;
+  for (var tileId = numTiles - 1; tileId >= 0; tileId--) {
+    var xTranslate = -(-( parseFloat(numTiles) / 2 ) + parseFloat(tileId) + 1);
+    writeTile(row[tileId], yTranslate, xTranslate);
+  }
+}
+
+function writeTile(tile, yTranslate, xTranslate) {
+  var numSlices = tile.length;
+  for (var sliceId = numSlices - 1; sliceId >= 0; sliceId--) {
+    writeSlice(tile[sliceId], yTranslate, xTranslate);
+  }
+}
+
+function writeSlice(sliceId, yTranslate, xTranslate) {
   queueHookForSlice(sliceId, function(slice){
-    var gNode = gridNode(x, y);
+    console.info('writing slice '+sliceId+' ['+yTranslate+','+xTranslate+']');
+    var gNode = gridNode(xTranslate, yTranslate);
     addSVGClass(gNode, slice['name']);
     writeSVG( unescape(slice['svg']), gNode );
   });
