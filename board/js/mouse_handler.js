@@ -23,7 +23,7 @@ function mouseHandler(theEvent){
     if (parentNode != document) { // Deal with the zoomer
       var klass = parentNode.getAttribute("class")
       if (parentNode.id === 'zoomer') {
-        console.info('you clicked the zoomer! You win one hundered pesos.');
+        if(console.logLevel >= 4) console.info('clicked zoomer');
         map = document.getElementById('map')
         board = document.getElementById('board')
         handle = document.getElementById('zoomer_handle')
@@ -43,7 +43,7 @@ function mouseHandler(theEvent){
       
       
       } else if ((klass) && klass.match('tile')) { // Deal with the dragging
-        if (debug) { deubgMouseHandler(theEvent); }
+        if(console.logLevel >= 4) console.info('clicked tile');
         
         map = document.getElementById('map');
         mapDragOK = true;
@@ -64,26 +64,8 @@ function mouseHandler(theEvent){
   }; // while
 }; // function mouseHandler
 
-function deubgMouseHandler(theEvent){
-  if (theEvent == null) { theEvent = window.event }
-  var parentNode = theEvent.target // not setting to parentNode yet, we want to test actual target too
-  while (parentNode) { // fail out if we've reached the document (document.parentNode == null)
-    if (parentNode != document) {
-      var klass = parentNode.getAttribute("class")
-      if ((klass) && klass.match('tile')) {
-        position = parentNode.getAttribute("transform")
-        if (pastPosition != position) {
-          console.info("you clicked a tile: " + position)
-        }
-        pastPosition = position
-      }
-    }
-    parentNode = parentNode.parentNode
-  } // while parentNode
-} // function deubgMoseMoveHandler
-
 function mapZoomMouseMoveHandler(theEvent){
-  console.log('zooming')
+  if(console.logLevel >= 5) console.info('zooming')
   if (theEvent == null) { theEvent = window.event }; 
   if (theEvent.button <= 1 && mapZoomOK){
     var mapZoomerMouseLoc = getSvgLoc(board,theEvent)
@@ -125,7 +107,7 @@ function mapZoomMouseMoveHandler(theEvent){
 }
 
 function mapDragMouseMoveHandler(theEvent){
-  console.log('dragging')
+  if(console.logLevel >= 5) console.info('dragging')
   if (theEvent == null) { theEvent = window.event } 
   if (theEvent.button <= 1 && mapDragOK){
     var mapDragMouseLoc = getSvgLoc(map,theEvent)
@@ -153,7 +135,6 @@ function mouseCleanupHandler(theEvent){
 
 var mapZoomOK = false;
 var mapDragOK = false;
-var debug = true;
 var pastPosition = null;
 document.onmousedown=mouseHandler;
 mouseCleanupHandler(null);

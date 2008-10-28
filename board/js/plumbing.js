@@ -1,3 +1,4 @@
+// Prepare everything for browsers with no console.
 if (!window.console) window.console = {
   log: function() {},
   dir: function() {},
@@ -16,6 +17,8 @@ if (!window.console) window.console = {
   profile: function() {},
   profileEnd: function() {}
 };
+
+window.console.logLevel = 0
 
 function clearElementById(id){
   var element = document.getElementById(id)

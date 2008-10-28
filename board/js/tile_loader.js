@@ -22,12 +22,11 @@ function retrieveMap(id, onRetrieve) {
 
 var cachedMap;
 function switchToMap(id) {
-  console.info('processing map ' + id);
-  console.info('queued for transfer...');
+  if(console.logLevel >= 2) console.info('loading map ' + id);
   var mapId = parseInt(id);
   
   retrieveMap(mapId, function(map) {
-    console.info('...received!');
+    if(console.logLevel >= 3) console.info('received map');
     clearElementById('tiles');
     cachedMap = map;
     writeMap(map);
@@ -35,7 +34,7 @@ function switchToMap(id) {
 }
 
 function writeMap(map) {
-  console.log('writing map');
+  if(console.logLevel >= 3) console.log('writing map');
   var xTranslate;
   var yTranslate;
   
@@ -48,9 +47,9 @@ function writeMap(map) {
     // returns a function that takes no arguments, but has the arguments it
     // needs embedded into it's scope.
     var rowWriter = (function(map, rowId, yTranslate) { return function() {
-      console.group('writing row '+ rowId);
+      if(console.logLevel >= 4) console.group('writing row '+ rowId);
       writeRow(map[rowId], yTranslate);
-      console.groupEnd();
+      if(console.logLevel >= 4) console.groupEnd();
     } })(map, rowId, yTranslate)
     
     queuedRows.push(rowWriter);
@@ -84,7 +83,7 @@ function writeTile(tile, yTranslate, xTranslate) {
 
 function writeSlice(sliceId, yTranslate, xTranslate) {
   queueHookForSlice(sliceId, function(slice){
-    console.info('writing slice '+sliceId+' ['+yTranslate+','+xTranslate+']');
+    if(console.logLevel >= 5) console.info('writing slice '+sliceId+' ['+yTranslate+','+xTranslate+']');
     var gNode = gridNode(xTranslate, yTranslate);
     addSVGClass(gNode, slice['name']);
     writeSVG( unescape(slice['svg']), gNode );
