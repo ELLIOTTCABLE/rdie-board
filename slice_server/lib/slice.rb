@@ -1,15 +1,15 @@
-class Tile
-  TileBackground = "<rect x='0' y='0' width='100' height='100' class='background'/>"
+class Slice
+  SliceBackground = "<rect x='0' y='0' width='100' height='100' class='background'/>"
   
-  Tiles = []
+  Slices = []
   
   def self.[] id
     # if id.respond_to? :to_int # Symbols respond to to_int. WTF!
     if id.is_a? Numeric
-      Tiles[id]
+      Slices[id]
     # elsif id.respond_to? :to_str # Unfortunately, Symbol being stupid again.
     elsif id.respond_to? :to_s
-      Tiles.select{|i| i.name == id }.first
+      Slices.select{|i| i.name == id }.first
     else
       nil
     end
@@ -49,16 +49,16 @@ class Tile
   def initialize name, opts = {}
     @name = name
     self.css = opts[:css] || nil
-    self.svg = opts[:svg] || TileBackground
+    self.svg = opts[:svg] || SliceBackground
     
     yield self if block_given?
     
-    Tiles << self
+    Slices << self
   end
   
   def to_h
     {
-      :id => Tiles.index(self),
+      :id => Slices.index(self),
       :name => @name,
       :css  => @css,
       :svg  => @svg
@@ -66,10 +66,10 @@ class Tile
   end
 end
 
-Tile.new :null # Tile of ID 0 should always be an empty tile named 'null'
-Tile.new :test do |tile|
-  tile.css = ".background { fill: #FF0000; } .background:hover { fill: #00FF00; }"
+Slice.new :null # Slice of ID 0 should always be an empty slice named 'null'
+Slice.new :test do |slice|
+  slice.css = ".background { fill: #FF0000; } .background:hover { fill: #00FF00; }"
 end
-Tile.new :grass do |tile|
-  tile.css = ".background { fill: #009900; }"
+Slice.new :grass do |slice|
+  slice.css = ".background { fill: #009900; }"
 end

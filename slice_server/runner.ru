@@ -1,6 +1,6 @@
 %w[rubygems halcyon hpricot css_parser].each {|dep| require dep }
 
-require 'lib/tile'
+require 'lib/slice'
 require 'lib/map'
 
 require 'app/config'

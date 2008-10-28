@@ -39,18 +39,18 @@ function writeMap(map) {
   var xTranslate;
   var yTranslate;
   
-  var rows = map.length;
-  for (var row = rows - 1; row >= 0; row--) {
+  var numRows = map.length;
+  for (var rowId = numRows - 1; rowId >= 0; rowId--) {
     
-    var yTranslate = -(-( parseFloat(rows) / 2 ) + parseFloat(row) + 1);
-    var cols = map[row].length;
-    for (var col = cols - 1; col >= 0; col--) {
-      
-      var xTranslate = -(-( parseFloat(cols) / 2 ) + parseFloat(col) + 1);
-      var tiles = map[row][col].length;
-      for (var tile = tiles - 1; tile >= 0; tile--) {
-        console.group('writing tile '+map[row][col][tile]+' at '+xTranslate+', '+yTranslate);
-        addTile(map[row][col][tile], xTranslate, yTranslate);
+    var yTranslate = -(-( parseFloat(numRows) / 2 ) + parseFloat(rowId) + 1);
+    var numTiles = map[rowId].length;
+    for (var tileId = numTiles - 1; tileId >= 0; tileId--) {
+
+      var xTranslate = -(-( parseFloat(numTiles) / 2 ) + parseFloat(tileId) + 1);
+      var numSlices = map[rowId][tileId].length;
+      for (var sliceId = numSlices - 1; sliceId >= 0; sliceId--) {
+        console.group('writing slice '+map[rowId][tileId][sliceId]+' at '+xTranslate+', '+yTranslate);
+        addSlice(map[rowId][tileId][sliceId], xTranslate, yTranslate);
         console.groupEnd();
       };
     };
@@ -58,70 +58,70 @@ function writeMap(map) {
   console.groupEnd();
 }
 
-// Adds a new tile to the grid. Gets the tile from the server, and prints
+// Adds a new slice to the grid. Gets the slice from the server, and prints
 // anything necessary to display it to the page.
-function addTile(id, x, y) {
-  var tileId = parseInt(id)
+function addSlice(sliceId_opt, x, y) {
+  var sliceId = parseInt(sliceId_opt)
   
-  queueHookForTile(tileId, function(tile){
+  queueHookForSlice(sliceId, function(slice){
     var gNode = gridNode(x, y);
-    addSVGClass(gNode, tile['name']);
-    writeSVG( unescape(tile['svg']), gNode );
+    addSVGClass(gNode, slice['name']);
+    writeSVG( unescape(slice['svg']), gNode );
   });
 }
 
-// Once loaded, all a tile's hook queue entries will be run, and any hook
+// Once loaded, all a slice's hook queue entries will be run, and any hook
 // passed to this after that point will be run directly. The first hook passed
-// to this causes the tile to be requested for loading.
+// to this causes the slice to be requested for loading.
 // 
-// Returnes the tile if it's already cached, true if it's already been queued,
+// Returnes the slice if it's already cached, true if it's already been queued,
 // and false if this is the first time it's been requested.
 // TODO: Figure out why this particular function runs so slow!
-var queuedTiles = new Array();
-function queueHookForTile(id, hook) {
-  var tileId = parseInt(id)
-  // If we've already got the tile, just run the hook on it now.
-  var cachedTile = cachedTiles[tileId];
-  if(cachedTile != 'undefined' && cachedTile != null) {
-    hook(cachedTile);
-    return cachedTile;
+var queuedSlices = new Array();
+var cachedSlices = new Array();
+function queueHookForSlice(sliceId_opt, hook) {
+  var sliceId = parseInt(sliceId_opt)
+  // If we've already got the slice, just run the hook on it now.
+  var cachedSlice = cachedSlices[sliceId];
+  if(cachedSlice != 'undefined' && cachedSlice != null) {
+    hook(cachedSlice);
+    return cachedSlice;
   }
   
   // If it's not retreived yet, but it's been queued, add our hook to the
   // queue
-  var tileQueue = queuedTiles[tileId];
-  if(tileQueue != 'undefined' && tileQueue != null) {
-    tileQueue.push(hook);
+  var sliceQueue = queuedSlices[sliceId];
+  if(sliceQueue != 'undefined' && sliceQueue != null) {
+    sliceQueue.push(hook);
     return true;
   }
   
   // If it's not been queued, we'll queue it now, and actually request the
-  // tile.
-  queuedTiles[tileId] = new Array();
-  queuedTiles[tileId].push(hook);
-  retrieveTile( tileId, function(tile) {
-    runHooksForTile(tileId, tile);
+  // slice.
+  queuedSlices[sliceId] = new Array();
+  queuedSlices[sliceId].push(hook);
+  retrieveSlice( sliceId, function(slice) {
+    runHooksForSlice(sliceId, slice);
   });
   
   return false;
 }
 
-function runHooksForTile(tileId, tile) {
-  for (var i = queuedTiles[tileId].length - 1; i >= 0; i--){
-    queuedTiles[tileId][i](tile);
+function runHooksForSlice(sliceId, slice) {
+  for (var i = queuedSlices[sliceId].length - 1; i >= 0; i--){
+    queuedSlices[sliceId][i](slice);
   };
 }
 
-// This will retrieve a tile as JSON, caching all previously requested
-// tiles to save JHR requests. Due to the async nature of XHR and thus
-// JHR, we can't return the tile itself - you have to pass a function
-// to retrieveTile() documenting how you want to deal with the tile.
-var cachedTiles = new Array();
-function retrieveTile(id, onRetrieve) {
-  JSONHttpRequest(API_URI + '/tile/' + id, function(tile) {
-    cachedTiles[ parseInt(tile['id']) ] = tile;
-    if(tile['css']){ writeCSS( unescape(tile['css']) ) };
-    onRetrieve(tile);
+// This will retrieve a slice as JSON, caching all previously requested
+// slices to save JHR requests. Due to the async nature of XHR and thus
+// JHR, we can't return the slice itself - you have to pass a function
+// to retrieveSlice() documenting how you want to deal with the slice.
+function retrieveSlice(id, onRetrieve) {
+  JSONHttpRequest(API_URI + '/slice/' + id, function(slice) {
+    cachedSlices[ parseInt(slice['id']) ] = slice;
+    if(slice['css']){ writeCSS( unescape(slice['css']) ) };
+    onRetrieve(slice);
   });
 }
 
@@ -140,7 +140,7 @@ function writeSVG(svgSource, parentNode) {
 }
 
 // Returns the <g> object representing one 'grid tile', so actual graphical
-// tiles can be added to it. Creates said tile if necessary.
+// slices can be added to it. Creates said tile if necessary.
 function gridNode(x, y) {
   var gNode = findGridNode(x, y);
   if(!gNode) {
