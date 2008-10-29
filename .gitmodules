@@ -1,0 +1,3 @@
+[submodule "rack"]
+	path = slice_server/vendor/rack
+	url = git://github.com/chneukirchen/rack.git
