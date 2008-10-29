@@ -15,9 +15,9 @@ The release version of rack is missing some code we need, so we have to
 submodule in an updated version.
 
     git submodule update --init
-    sudo ./slice_server/vendor/rack/bin/rackup\
-      --include './slice_server/vendor/rack/lib'\
-      --port 80 runner.ru
+    sudo ./slice_server/vendor/rack/bin/rackup \
+      --include './slice_server/vendor/rack/lib' \
+      --port 80 -- './slice_server/runner.ru'
 
 Now just visit <http://localhost/index.xhtml> and try loading the 25×25 tile
 example map.

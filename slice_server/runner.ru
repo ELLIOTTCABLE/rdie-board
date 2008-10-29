@@ -1,4 +1,5 @@
 %w[rubygems halcyon hpricot css_parser].each {|dep| require dep }
+($:.unshift File.expand_path( File.dirname(__FILE__) )).uniq!
 
 # = Library
 require 'lib/slice'
