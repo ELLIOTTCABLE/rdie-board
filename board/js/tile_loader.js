@@ -10,6 +10,8 @@ function JSONHttpRequest(URI, onResponse, method_opt, charset_opt) {
   request.onreadystatechange = function() {
     if (request.readyState == 4 && request.status == 200 && request.responseText) {
       onResponse( (JSON.parse(request.responseText))['body'] );
+    } else if (request.readyState == 4 && request.status != 200) {
+      throw new Error("XHR Failure (" + request.status + ", \"" + request.statusText + "\")");
     }
   }
   
