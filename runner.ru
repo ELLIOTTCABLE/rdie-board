@@ -35,7 +35,7 @@ apps << Rack::File.new(Halcyon.root / 'static')
 
 # Have to make sure XHTML works. This is better handled in the latest changes
 # to Rack, but we want to work with 0.4.0 (release version at this time).
-Rack::File::MIME_TYPES['xhtml'] = 'application/xhtml+xml'
+Rack::Mime::MIME_TYPES['.xhtml'] = 'application/xhtml+xml'
 
 # = Halcyon App
 apps << Halcyon::Runner.new
