@@ -10,7 +10,9 @@ nothing else, because this code is so horrendously ugly and unmaintainable.
 Using
 -----
     
-    sudo rackup --port 80 -- runner.ru
+    rackup --port 4647 -- runner.ru
+    # or
+    thin --port 4647 --rackup runner.ru start
     
 Now just visit <http://localhost/> and try loading the 25×25 tile
 example map.
